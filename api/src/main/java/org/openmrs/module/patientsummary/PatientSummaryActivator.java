@@ -16,35 +16,15 @@ package org.openmrs.module.patientsummary;
 
 import org.apache.commons.logging.Log; 
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.ModuleActivator;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
-public class PatientSummaryActivator implements ModuleActivator {
+public class PatientSummaryActivator extends BaseModuleActivator {
 	
 	protected Log log = LogFactory.getLog(getClass());
-		
-	/**
-	 * @see ModuleActivator#willRefreshContext()
-	 */
-	public void willRefreshContext() {
-		log.info("Refreshing Patient Summary Module");
-	}
-	
-	/**
-	 * @see ModuleActivator#contextRefreshed()
-	 */
-	public void contextRefreshed() {
-		log.info("Patient Summary Module refreshed");
-	}
-	
-	/**
-	 * @see ModuleActivator#willStart()
-	 */
-	public void willStart() {
-		log.info("Starting Patient Summary Module");
-	}
 	
 	/**
 	 * @see ModuleActivator#started()
@@ -54,17 +34,9 @@ public class PatientSummaryActivator implements ModuleActivator {
 	}
 	
 	/**
-	 * @see ModuleActivator#willStop()
-	 */
-	public void willStop() {
-		log.info("Stopping Patient Summary Module");
-	}
-	
-	/**
 	 * @see ModuleActivator#stopped()
 	 */
 	public void stopped() {
 		log.info("Patient Summary Module stopped");
-	}
-		
+	}	
 }

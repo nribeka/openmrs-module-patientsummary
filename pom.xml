@@ -7,25 +7,22 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Patient Summary Module</name>
-	<description>Helps to start writing OpenMRS modules</description>
-	<url>https://wiki.openmrs.org/display/docs/Patient+Summary+Module+Module</url>
+	<description>Enables users to create customizable patient summaries</description>
+	<url>https://wiki.openmrs.org/display/docs/Patient+Summary+Module</url>
 	
-	<developers>
-		<developer>
-			<name>nribeka</name>
-		</developer>
-	</developers>
-	
-	<organization>
-		<name>OpenMRS</name>
-		<url>http://openmrs.org</url>
-	</organization>
-
 	<scm>
-		<connection>scm:svn:https://svn.openmrs.org/openmrs-modules/patientsummary/trunk/</connection>
-		<developerConnection>scm:svn:https://svn.openmrs.org/openmrs-modules/patientsummary/trunk/</developerConnection>
-		<url>https://svn.openmrs.org/openmrs-modules/patientsummary/trunk/</url>
+		<connection>scm:git:https://github.com/mseaton/openmrs-module-patientsummary/</connection>
+		<developerConnection>scm:git:https://github.com/mseaton/openmrs-module-patientsummary/</developerConnection>
+		<url>https://github.com/mseaton/openmrs-module-patientsummary/</url>
 	</scm>
+	
+	<distributionManagement>
+		<repository>
+			<id>openmrs-repo-modules</id>
+			<name>OpenMRS Modules</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
+		</repository>
+	</distributionManagement>
 
 	<modules>
 		<module>api</module>
@@ -33,40 +30,16 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>1.8.2</openMRSVersion>
+		<openMRSVersion>1.7.4</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<MODULE_ID>${project.parent.artifactId}</MODULE_ID>
+		<MODULE_NAME>${project.parent.name}</MODULE_NAME>
+		<MODULE_VERSION>${project.parent.version}</MODULE_VERSION>
+		<MODULE_PACKAGE>${project.parent.groupId}.${project.parent.artifactId}</MODULE_PACKAGE>
 	</properties>
 
-	<dependencyManagement>
-		<dependencies>
-		
-			<!--
-			Libraries to add as dependencies with compile or runtime scope:
-			Find matching dependencies in the maven central repository.
-			<dependency>
-				<groupId>org.other.library</groupId>
-				<artifactId>library-name</artifactId>
-				<version>library.version</version>
-				<scope>compile</scope>
-			</dependency>
-			-->
-			
-						
-			<!-- Begin OpenMRS modules -->
-			
-						
-			<dependency>
-				<groupId>org.openmrs.module</groupId>
-				<artifactId>reporting-api</artifactId>
-				<version>0.7.2.DEV-SNAPSHOT</version>
-				<scope>provided</scope>
-			</dependency>
-						
-			<!-- End OpenMRS modules -->
-			
-
-			<!-- Begin OpenMRS core -->
-			
+	<dependencies>
+	
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -74,7 +47,16 @@
 				<type>jar</type>
 				<scope>provided</scope>
 			</dependency>
-
+			
+			<dependency>
+				<groupId>org.openmrs.api</groupId>
+				<artifactId>openmrs-api</artifactId>
+				<version>${openMRSVersion}</version>
+				<type>jar</type>
+				<scope>test</scope>
+				<classifier>tests</classifier>
+			</dependency>
+			
 			<dependency>
 				<groupId>org.openmrs.web</groupId>
 				<artifactId>openmrs-web</artifactId>
@@ -82,21 +64,14 @@
 				<type>jar</type>
 				<scope>provided</scope>
 			</dependency>
-						
-			<dependency>
-				<groupId>org.openmrs.api</groupId>
-				<artifactId>openmrs-api</artifactId>
-				<version>${openMRSVersion}</version>
-				<type>test-jar</type>
-				<scope>test</scope>
-			</dependency>
 			
 			<dependency>
 				<groupId>org.openmrs.web</groupId>
 				<artifactId>openmrs-web</artifactId>
 				<version>${openMRSVersion}</version>
-				<type>test-jar</type>
+				<type>jar</type>
 				<scope>test</scope>
+				<classifier>tests</classifier>
 			</dependency>
 			
 			<dependency>
@@ -106,11 +81,22 @@
 				<type>pom</type>
 				<scope>test</scope>
 			</dependency>
-						
-			<!-- End OpenMRS core -->
+			
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>reporting-api</artifactId>
+				<version>0.7.2</version>
+				<scope>provided</scope>
+			</dependency>
 
-		</dependencies>
-	</dependencyManagement>
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>serialization.xstream-api</artifactId>
+				<version>0.2.7</version>
+				<scope>provided</scope>
+			</dependency>
+
+	</dependencies>
 
 	<build>
 		<pluginManagement>

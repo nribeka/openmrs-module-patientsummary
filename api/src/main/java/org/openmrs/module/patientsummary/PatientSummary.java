@@ -14,11 +14,11 @@
 package org.openmrs.module.patientsummary;
 
 import java.io.Serializable;
+
 import org.openmrs.BaseOpenmrsObject;
-import org.openmrs.BaseOpenmrsMetadata;
 
 /**
- * It is a model class. It should extend either {@link BaseOpenmrsObject} or {@link BaseOpenmrsMetadata}.
+ * Represents a configured Patient Summary
  */
 public class PatientSummary extends BaseOpenmrsObject implements Serializable {
 

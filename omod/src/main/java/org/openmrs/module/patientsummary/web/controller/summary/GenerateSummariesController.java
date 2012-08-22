@@ -67,17 +67,19 @@ public class GenerateSummariesController {
 
     @RequestMapping(method = RequestMethod.GET)
     public void prepare(final ModelMap map) {
-        map.addAttribute("cohorts", Context.getCohortService().getAllCohorts());
+        
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public void process(final @RequestParam(required = true, value = "cohort") Integer cohortId,
+    public void process(final @RequestParam(required = false, value = "cohort") Integer cohortId,
                         final @RequestParam(required = true, value = "template") MultipartFile template,
                         final HttpServletResponse response) throws IOException, EvaluationException {
 
         EvaluationContext context = new EvaluationContext();
         context.addParameterValue("currentDate", new Date());
-        context.setBaseCohort(Context.getCohortService().getCohort(cohortId));
+        if (cohortId != null) {
+        	context.setBaseCohort(Context.getCohortService().getCohort(cohortId));
+        }
 
         PatientDataSetDefinition definition = new PatientDataSetDefinition();
 
@@ -114,7 +116,6 @@ public class GenerateSummariesController {
 
         ReportDesignResource resource = new ReportDesignResource();
         resource.setName("excel-template.xls");
-        Properties props = new Properties();
         InputStream inputStream = template.getInputStream();
         resource.setContents(IOUtils.toByteArray(inputStream));
         IOUtils.closeQuietly(inputStream);

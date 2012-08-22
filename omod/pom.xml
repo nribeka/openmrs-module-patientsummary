@@ -12,6 +12,14 @@
 	<packaging>jar</packaging>
 	<name>Patient Summary Module OMOD</name>
 	<description>OMOD project for PatientSummary</description>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>patientsummary-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<finalName>${project.parent.artifactId}-${project.parent.version}</finalName>

@@ -18,6 +18,5 @@
 	
 	<!-- Add further links here -->
 </ul>
-<h2>
-	<spring:message code="patientsummary.title" />
-</h2>
+<h3><spring:message code="patientsummary.title" /></h3>
+<hr/>

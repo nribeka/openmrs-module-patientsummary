@@ -13,14 +13,33 @@
  */
 package org.openmrs.module.patientsummary.api;
 
+import java.util.List;
+
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.module.patientsummary.PatientSummary;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * API interface for Patient Summary services
  */
-@Transactional
 public interface PatientSummaryService extends OpenmrsService {
-     
+	
+	/**
+	 * @return the PatientSummary referenced by the passed id
+	 */
+	@Transactional(readOnly = true)
+	public PatientSummary getPatientSummary(Integer id);
+	
+	/**
+	 * @return the PatientSummary with the given uuid
+	 */
+	@Transactional(readOnly = true)
+	public PatientSummary getPatientSummaryByUuid(String uuid);
+	
+	/**
+	 * @return all {@link PatientSummary}s
+	 */
+	@Transactional(readOnly = true)
+	public List<PatientSummary> getAllPatientSummaries(boolean includeRetired);
 
 }

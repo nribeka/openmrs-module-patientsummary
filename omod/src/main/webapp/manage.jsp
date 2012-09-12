@@ -11,7 +11,7 @@
 				<openmrs_tag:patientField formFieldName="patientId" initialValue="${patientId}" /><br/><br/>
 				<b>Choose Summary:</b><br/>
 				<c:forEach items="${patientSummaries}" var="ps">
-					<input type="radio" name="summaryId" value="${ps.id}" <c:if test="${designToPreview != null && designToPreview.id == ps.id}">checked</c:if>/> ${ps.name}<br/>
+					<input type="radio" name="summaryId" value="${ps.id}" <c:if test="${summaryToPreview != null && summaryToPreview.id == ps.id}">checked</c:if>/> ${ps.name}<br/>
 				</c:forEach>
 				<br/>
 				<input type="submit" value="Preview"/>
@@ -20,13 +20,13 @@
 		<td style="width:95%; vertical-align:top;">
 			<c:choose>
 				<c:when test="${!empty errorDetails}">
-					An error occurred generating the patient summary named ${designToPreview.name}:<br/>
+					An error occurred generating the patient summary named ${summaryToPreview.name}:<br/>
 					<pre>
 						${errorDetails}
 					</pre>
 				</c:when>
-				<c:when test="${!empty designToPreview}">
-					Preview of ${designToPreview.name}:<hr/>
+				<c:when test="${!empty summaryToPreview}">
+					Preview of ${summaryToPreview.name}:<hr/>
 					${generatedSummary}
 				</c:when>
 				<c:otherwise>

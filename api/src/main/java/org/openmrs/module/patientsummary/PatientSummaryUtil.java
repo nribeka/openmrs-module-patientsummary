@@ -31,7 +31,6 @@ public final class PatientSummaryUtil implements GlobalPropertyListener {
 	
 	private static String patientSummaryTabName;
 	
-	//private static List<ReportDesign> reportDesigns;
 	private static List<String> reportDesignUuids;
 	
 	/**

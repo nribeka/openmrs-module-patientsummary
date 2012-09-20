@@ -82,6 +82,7 @@ div#patientsummary_reportDesignDialog {
 <div id="reportDesignSelectDiv">
 	<b><spring:message code="patientsummary.selectReportDesign" /></b>:
 	<select id="reportDesignSelect">
+		<option></option>
 		<c:forEach items="${model.reportDesigns}" var="reportDesign">		
 		<option value="${reportDesign.uuid}">${reportDesign.name}</option>
 		</c:forEach>

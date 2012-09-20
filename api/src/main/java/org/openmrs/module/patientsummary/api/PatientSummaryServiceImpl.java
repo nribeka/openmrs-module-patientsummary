@@ -22,8 +22,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.patientsummary.PatientSummary;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
-import org.openmrs.module.patientsummary.renderer.PatientSummaryReportRenderer;
 import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.definition.ReportDefinition;
+import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.service.ReportService;
 
 /**
@@ -32,6 +33,36 @@ import org.openmrs.module.reporting.report.service.ReportService;
 public class PatientSummaryServiceImpl extends BaseOpenmrsService implements PatientSummaryService {
 	
 	protected final Log log = LogFactory.getLog(this.getClass());
+	
+	/**
+	 * @see PatientSummaryService#getPatientSummaryReportDefinition(Integer)
+	 */
+	@Override
+	public PatientSummaryReportDefinition getPatientSummaryReportDefinition(Integer id) {
+		return (PatientSummaryReportDefinition)getReportDefinitionService().getDefinition(id);
+	}
+	
+	/**
+	 * @see PatientSummaryService#getPatientSummaryReportDefinitionByUuid(String)
+	 */
+	@Override
+	public PatientSummaryReportDefinition getPatientSummaryReportDefinitionByUuid(String uuid) {
+		return (PatientSummaryReportDefinition)getReportDefinitionService().getDefinitionByUuid(uuid);
+	}
+	
+	/**
+	 * @see PatientSummaryService#getAllPatientSummaryDefinitions(boolean)
+	 */
+	@Override
+	public List<PatientSummaryReportDefinition> getAllPatientSummaryReportDefinitions(boolean includeRetired) {
+		List<PatientSummaryReportDefinition> l = new ArrayList<PatientSummaryReportDefinition>();
+		for (ReportDefinition d : getReportDefinitionService().getAllDefinitions(includeRetired)) {
+			if (d instanceof PatientSummaryReportDefinition) {
+				l.add((PatientSummaryReportDefinition)d);
+			}
+		}
+		return l;
+	}
 
 	/**
 	 * @see PatientSummaryService#getPatientSummary(Integer)
@@ -58,15 +89,18 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 	public List<PatientSummary> getAllPatientSummaries(boolean includeRetired) {
 		List<PatientSummary> l = new ArrayList<PatientSummary>();
 		for (ReportDesign d : getReportService().getAllReportDesigns(includeRetired)) {
-			//If associated to a PatientDatasetDefinition
-			if (d.getReportDefinition().getDataSetDefinitions()
-			        .containsKey(PatientSummaryReportDefinition.DEFAULT_DATASET_KEY)) {
-				if (PatientSummaryReportRenderer.class.isAssignableFrom(d.getRendererType())) {
-					l.add(new PatientSummary(d));
-				}
+			if (d.getReportDefinition() instanceof PatientSummaryReportDefinition) {
+				l.add(new PatientSummary(d));
 			}
 		}
 		return l;
+	}
+	
+	/**
+	 * @return the underlying ReportService used to manage the patient summary report definitions
+	 */
+	protected ReportDefinitionService getReportDefinitionService() {
+		return Context.getService(ReportDefinitionService.class);
 	}
 	
 	/**
@@ -74,22 +108,5 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 	 */
 	protected ReportService getReportService() {
 		return Context.getService(ReportService.class);
-	}
-	
-	/**
-	 * @see org.openmrs.module.patientsummary.api.PatientSummaryService#getAllPatientSummaryDefinitions(boolean)
-	 */
-	@Override
-	public List<PatientSummaryReportDefinition> getAllPatientSummaryDefinitions(boolean includeRetired) {
-		List<PatientSummaryReportDefinition> l = new ArrayList<PatientSummaryReportDefinition>();
-		for (ReportDesign d : getReportService().getAllReportDesigns(includeRetired)) {
-			if (d.getReportDefinition().getDataSetDefinitions()
-			        .containsKey(PatientSummaryReportDefinition.DEFAULT_DATASET_KEY)) {
-				if (PatientSummaryReportRenderer.class.isAssignableFrom(d.getRendererType())) {
-					l.add(new PatientSummaryReportDefinition(d));
-				}
-			}
-		}
-		return l;
 	}
 }

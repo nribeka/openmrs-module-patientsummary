@@ -13,13 +13,11 @@
  */
 package org.openmrs.module.patientsummary;
 
-import java.util.List;
-
+import org.openmrs.module.reporting.ReportingException;
 import org.openmrs.module.reporting.common.Localized;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.PatientDataSetDefinition;
-import org.openmrs.module.reporting.evaluation.parameter.Parameter;
-import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 
 /**
@@ -31,7 +29,7 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 @Localized("reporting.PatientSummaryReportDefinition")
 public class PatientSummaryReportDefinition extends ReportDefinition {
 	
-	public static final String DEFAULT_DATASET_KEY = "defaultDataSet";
+	public static final String DEFAULT_DATASET_KEY = "patients";
 	
 	/**
 	 * Default Constructor
@@ -42,27 +40,23 @@ public class PatientSummaryReportDefinition extends ReportDefinition {
 	}
 	
 	/**
-	 * @param d
-	 */
-	public PatientSummaryReportDefinition(ReportDesign d) {
-		this();
-		setName(d.getReportDefinition().getName());
-		setParameters(d.getReportDefinition().getParameters());
-		getDataSetDefinitions().putAll(d.getReportDefinition().getDataSetDefinitions());
-	}
-	
-	/**
-	 * @see org.openmrs.module.reporting.evaluation.BaseDefinition#getParameters()
+	 * Overrides the default behavior, such that only a single PatientDataSetDefinition is supported
 	 */
 	@Override
-	public List<Parameter> getParameters() {
-		return getDataSetDefinitions().get(DEFAULT_DATASET_KEY).getParameterizable().getParameters();
+	public void addDataSetDefinition(String key, Mapped<? extends DataSetDefinition> definition) {
+		if (definition != null && definition.getParameterizable() instanceof PatientSummaryReportDefinition && 
+			(getDataSetDefinitions().isEmpty() || (getDataSetDefinitions().size() == 1 && getDataSetDefinitions().containsKey(key)))) {
+			getDataSetDefinitions().put(key, definition);
+		}
+		else {
+			throw new ReportingException("Cannot add more than one PatientDataSetDefinition to a PatientSummaryReportDefinition");
+		}
 	}
-	
+
 	/**
-	 * @param dataSetDefinition
+	 * @return the underlying PatientDataSetDefinition
 	 */
-	public void addDataSetDefinition(DataSetDefinition dataSetDefinition) {
-		addDataSetDefinition(dataSetDefinition.getName(), dataSetDefinition, null);
+	public PatientDataSetDefinition getPatientDataSetDefinition() {
+		return (PatientDataSetDefinition) getDataSetDefinitions().get(DEFAULT_DATASET_KEY).getParameterizable();
 	}
 }

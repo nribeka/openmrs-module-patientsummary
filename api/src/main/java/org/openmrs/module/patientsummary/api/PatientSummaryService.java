@@ -26,6 +26,24 @@ import org.springframework.transaction.annotation.Transactional;
 public interface PatientSummaryService extends OpenmrsService {
 	
 	/**
+	 * @return the {@link PatientSummaryReportDefinition} referenced by the passed id
+	 */
+	@Transactional(readOnly = true)
+	public PatientSummaryReportDefinition getPatientSummaryReportDefinition(Integer id);
+	
+	/**
+	 * @return the {@link PatientSummaryReportDefinition} referenced by the passed uuid
+	 */
+	@Transactional(readOnly = true)
+	public PatientSummaryReportDefinition getPatientSummaryReportDefinitionByUuid(String uuid);
+	
+	/**
+	 * @return all {@link PatientSummaryReportDefinition}s
+	 */
+	@Transactional(readOnly = true)
+	public List<PatientSummaryReportDefinition> getAllPatientSummaryReportDefinitions(boolean includeRetired);
+	
+	/**
 	 * @return the PatientSummary referenced by the passed id
 	 */
 	@Transactional(readOnly = true)
@@ -42,11 +60,4 @@ public interface PatientSummaryService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<PatientSummary> getAllPatientSummaries(boolean includeRetired);
-	
-	/**
-	 * @return all {@link PatientSummaryReportDefinition}s
-	 */
-	@Transactional(readOnly = true)
-	public List<PatientSummaryReportDefinition> getAllPatientSummaryDefinitions(boolean includeRetired);
-	
 }

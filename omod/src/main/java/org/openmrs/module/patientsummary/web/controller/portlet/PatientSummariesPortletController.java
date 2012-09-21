@@ -41,11 +41,8 @@ public class PatientSummariesPortletController extends PortletController {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		List<PatientSummary> patientSummaries = ConfigurationUtil.getPatientSummariesForDashboard();
 		model.put("patientSummaries", patientSummaries);
-		if (patientSummaries.size() == 1) {
-			PatientSummary ps = patientSummaries.get(0);
-			if (ps.getReportDesign().getReportDefinition().getParameters().isEmpty()) {
-				model.put("summaryToLoad", ps);
-			}
+		if (patientSummaries.size() > 0) {
+			model.put("defaultSummary", patientSummaries.get(0));
 		}
 	}
 }

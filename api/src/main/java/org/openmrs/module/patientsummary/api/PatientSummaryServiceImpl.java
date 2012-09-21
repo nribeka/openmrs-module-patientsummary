@@ -13,18 +13,26 @@
  */
 package org.openmrs.module.patientsummary.api;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.patientsummary.PatientSummary;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
+import org.openmrs.module.patientsummary.PatientSummaryResult;
+import org.openmrs.module.reporting.evaluation.EvaluationContext;
+import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
+import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
 
 /**
@@ -96,6 +104,48 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 		return l;
 	}
 	
+	/**
+	 * @see PatientSummaryService#evaluatePatientSummary(PatientSummary, Integer, Map)
+	 */
+	@Override
+	public PatientSummaryResult evaluatePatientSummary(PatientSummary summary, Integer patientId, Map<String, Object> parameters) {
+		PatientSummaryResult result = new PatientSummaryResult(summary, patientId, parameters);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			// Populate a new EvaluationContext with the patient and parameters passed in
+			EvaluationContext context = new EvaluationContext();
+			Cohort baseCohort = new Cohort();
+			baseCohort.addMember(patientId);
+			context.setBaseCohort(baseCohort);
+			if (parameters != null) {
+				for (Map.Entry<String, Object> paramEntry : parameters.entrySet()) {
+					context.addParameterValue(paramEntry.getKey(), paramEntry.getValue());
+				}
+			}
+			
+			// Evaluate the PatientSummary with this context to produce the data to use to populate the summary
+			ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
+			ReportData data = rds.evaluate(summary.getReportDesign().getReportDefinition(), context);
+			
+			// Render the template with this data to produce the raw data result
+			Class<? extends ReportRenderer> rendererType = summary.getReportDesign().getRendererType();
+			ReportRenderer renderer = rendererType.newInstance();
+			String rendererArg = summary.getReportDesign().getUuid();
+			renderer.render(data, rendererArg, baos);
+			
+			// Return a PatientSummaryResult which contains the raw output and contextual data
+			result.setContentType(renderer.getRenderedContentType(summary.getReportDesign().getReportDefinition(), rendererArg));
+			result.setRawContents(baos.toByteArray());
+		}
+		catch (Throwable t) {
+			result.setErrorDetails(t);
+		}
+		finally {
+			IOUtils.closeQuietly(baos);
+		}
+		return result;
+	}
+
 	/**
 	 * @return the underlying ReportService used to manage the patient summary report definitions
 	 */

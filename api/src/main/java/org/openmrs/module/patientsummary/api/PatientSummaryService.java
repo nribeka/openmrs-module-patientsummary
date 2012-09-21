@@ -14,10 +14,12 @@
 package org.openmrs.module.patientsummary.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.patientsummary.PatientSummary;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
+import org.openmrs.module.patientsummary.PatientSummaryResult;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -60,4 +62,10 @@ public interface PatientSummaryService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<PatientSummary> getAllPatientSummaries(boolean includeRetired);
+	
+	/**
+	 * @return the resulting patient summary result from evaluating the passed patient summary for the given patient and parameters
+	 */
+	@Transactional(readOnly = true)
+	public PatientSummaryResult evaluatePatientSummary(PatientSummary summary, Integer patientId, Map<String, Object> parameters);
 }

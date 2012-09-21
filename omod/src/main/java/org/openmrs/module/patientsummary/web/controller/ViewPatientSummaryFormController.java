@@ -13,36 +13,27 @@
  */
 package org.openmrs.module.patientsummary.web.controller;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.htmlwidgets.web.WidgetUtil;
 import org.openmrs.module.patientsummary.PatientSummary;
+import org.openmrs.module.patientsummary.PatientSummaryResult;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
 import org.openmrs.module.patientsummary.util.ConfigurationUtil;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
-import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
-import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
-import org.openmrs.module.reporting.report.renderer.ReportRenderer;
-import org.openmrs.module.reporting.report.renderer.SimpleHtmlReportRenderer;
-import org.openmrs.module.reporting.report.service.ReportService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Processes request for viewing patient summaries
@@ -53,154 +44,71 @@ public class ViewPatientSummaryFormController {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
-	 * Receives requests to run a report design
-	 * @param model
-	 * @param reportDesignUuid the uuid of the report design
-	 * @param patientId the patient's id
-	 * @param showParametersFormIfNecessary specifies if we need to prompt the user for requiredparameter values
+	 * Receives requests to run a patient summary.
+	 * @param patientId the id of patient whose summary you wish to view
+	 * @param summaryId the id of the patientsummary you wish to view
+	 * @param showParametersFormIfNecessary specifies if we need to prompt the user for required parameter values
 	 */
 	@RequestMapping("/module/" + ConfigurationUtil.MODULE_ID + "/viewPatientSummary")
-	public void viewPatientSummary(ModelMap model,
-	                                 @RequestParam("reportDesignUuid") String reportDesignUuid,
-	                                 @RequestParam("patientId") Integer patientId,
-	                                 @RequestParam(required = false, value = "showParametersFormIfNecessary") boolean showParametersFormIfNecessary,
-	                                 HttpServletRequest request, HttpServletResponse response) {
+	public void viewPatientSummary(ModelMap model, HttpServletRequest request, HttpServletResponse response,
+									@RequestParam("patientId") Integer patientId,                       
+									@RequestParam("summaryId") Integer summaryId,
+									@RequestParam(required = false, value = "showParametersFormIfNecessary") boolean showParametersFormIfNecessary) throws IOException {
 		
-		PatientSummary ps = Context.getService(PatientSummaryService.class).getPatientSummaryByUuid(reportDesignUuid);
+		PatientSummary ps = Context.getService(PatientSummaryService.class).getPatientSummary(summaryId);
 		if (ps != null) {
 			ReportDesign rd = ps.getReportDesign();
+			
+			// If we need to prompt the user for parameters, do this instead of rendering the summary
 			if (showParametersFormIfNecessary && !rd.getReportDefinition().getParameters().isEmpty()) {
 				model.addAttribute("showParametersForm", true);
-				model.addAttribute("reportDesignUuid", reportDesignUuid);
 				model.addAttribute("patientId", patientId);
+				model.addAttribute("summaryId", summaryId);
 				model.addAttribute("parameters", rd.getReportDefinition().getParameters());
-			} 
+			}
+			// Otherwise, render the summary
 			else {
+				// Retrieve all parameter values from the request.  If any are invalid, return to form
 				Map<String, Object> parameterValueMap = new HashMap<String, Object>();
-				Map<String, String> parameterErrors = null;
+				Map<String, String> parameterErrors = new HashMap<String, String>();
 				if (!rd.getReportDefinition().getParameters().isEmpty()) {
 					for (Parameter parameter : rd.getReportDefinition().getParameters()) {
-						Object paramVal = WidgetUtil.getFromRequest(request, parameter.getName(), parameter.getType(),
-						    parameter.getCollectionType());
-						if (paramVal == null) {
-							if (parameterErrors == null)
-								parameterErrors = new HashMap<String, String>();
-							parameterErrors.put(parameter.getName(), "error.required");
-							continue;
+						try {
+							Object paramVal = WidgetUtil.getFromRequest(request, parameter.getName(), parameter.getType(), parameter.getCollectionType());
+							if (paramVal == null) {
+								parameterErrors.put(parameter.getName(), "error.required");
+							}
+							else {
+								parameterValueMap.put(parameter.getName(), paramVal);
+							}
 						}
-						parameterValueMap.put(parameter.getName(), paramVal);
+						catch (Exception e) {
+							parameterErrors.put(parameter.getName(), "error.invalid");
+						}
 					}
 				}
 				
-				if (MapUtils.isEmpty(parameterErrors)) {
-					processRequest(model, patientId, rd, response, parameterValueMap);
+				// If there are no missing parameters
+				if (parameterErrors.isEmpty()) {
+					PatientSummaryService pss = Context.getService(PatientSummaryService.class);
+					PatientSummaryResult result = pss.evaluatePatientSummary(ps, patientId, parameterValueMap);
+					if (result.getErrorDetails() != null) {
+						result.getErrorDetails().printStackTrace(response.getWriter());
+					}
+					else {
+						response.setContentType(result.getContentType());
+						response.getOutputStream().write(result.getRawContents());
+						response.getOutputStream().flush();
+					}
 				} 
 				else {
 					model.addAttribute("showParametersForm", true);
-					model.addAttribute("reportDesignUuid", reportDesignUuid);
+					model.addAttribute("summaryid", summaryId);
 					model.addAttribute("patientId", patientId);
 					model.addAttribute("parameters", rd.getReportDefinition().getParameters());
 					model.addAttribute("parameterValueMap", parameterValueMap);
 					model.addAttribute("parameterErrors", parameterErrors);
 				}
-			}
-		}
-	}
-	
-	/**
-	 * Processes ajax requests to run a report design
-	 * 
-	 * @param reportDesignUuid
-	 * @param patientId
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping("/module/" + ConfigurationUtil.MODULE_ID + "/processAjaxRequest")
-	public Object processAjaxRequest(@RequestParam("reportDesignUuid") String reportDesignUuid,
-	                                 @RequestParam("patientId") Integer patientId) {
-		
-		Map<String, String> ret = new HashMap<String, String>();
-		ReportDesign rd = Context.getService(ReportService.class).getReportDesignByUuid(reportDesignUuid);
-		if (rd != null) {
-			try {
-				ret.put("results", generateSummary(patientId, rd, null, rd.getRendererType().newInstance()));
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				ret.put("errorDetails", "An error was encountered while generating the summary:" + e.getMessage());
-			}
-		}
-		
-		return ret;
-	}
-	
-	/**
-	 * Convenience method that processes a request to run a report design
-	 * 
-	 * @param model
-	 * @param patientId
-	 * @param rd
-	 * @param response
-	 * @param parameters
-	 */
-	private void processRequest(ModelMap model, Integer patientId, ReportDesign rd, HttpServletResponse response,
-	                            Map<String, Object> parameters) {
-		try {
-			ReportRenderer renderer = rd.getRendererType().newInstance();
-			String generatedSummary = generateSummary(patientId, rd, parameters, renderer);
-			if (SimpleHtmlReportRenderer.class.isAssignableFrom(rd.getRendererType())) {
-				model.addAttribute("generatedSummary", generatedSummary);
-			} else {
-				response.setHeader("Content-Type", renderer.getRenderedContentType(rd.getReportDefinition(), null));
-				response.setHeader("Content-Disposition",
-				    "attachment; filename=\"" + renderer.getFilename(rd.getReportDefinition(), null) + "\"");
-				
-				OutputStream out = response.getOutputStream();
-				out.write(generatedSummary.getBytes("UTF-8"));
-				out.flush();
-			}
-		}
-		catch (Exception e) {
-			model.addAttribute("errorDetails", "An error was encountered while generating the summary:" + e.getMessage());
-		}
-	}
-	
-	/**
-	 * Convenience method that performs the evaluation of a report definition associated to the
-	 * specified report design and returns the generated summary
-	 * 
-	 * @param patientId
-	 * @param rd
-	 * @param parameters
-	 * @param renderer
-	 * @return
-	 * @throws Exception
-	 */
-	private String generateSummary(Integer patientId, ReportDesign rd, Map<String, Object> parameters,
-	                               ReportRenderer renderer) throws Exception {
-		
-		EvaluationContext context = new EvaluationContext();
-		Cohort baseCohort = new Cohort();
-		baseCohort.addMember(patientId);
-		context.setBaseCohort(baseCohort);
-		if (parameters != null) {
-			for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-				context.addParameterValue(entry.getKey(), entry.getValue());
-			}
-		}
-		
-		ReportData data = Context.getService(ReportDefinitionService.class).evaluate(rd.getReportDefinition(), context);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			renderer.render(data, rd.getUuid(), baos);
-			return baos.toString("UTF-8");
-		}
-		finally {
-			try {
-				baos.close();
-			}
-			catch (Exception e) {
-				log.error("Error:" + e.getMessage());
 			}
 		}
 	}

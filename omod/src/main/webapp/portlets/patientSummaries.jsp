@@ -1,100 +1,64 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
+<c:set var="numSums" value="${fn:length(model.patientSummaries)}"/>
+<c:set var="defaultId" value="${model.defaultSummary != null ? model.defaultSummary.reportDesign.id : 0}"/>
+
 <script type="text/javascript">
-var reportCount = ${fn:length(model.patientSummaries)};
-var pageUrlPrefix = "<openmrs:contextPath />/module/patientsummary/";
-var loadedSummaryResults = null;
-$j(document).ready(function(){
-	//no configured reports, switch to the overview tab and hide the patient summary tab
-	if(${fn:length(model.patientSummaries)} == 0){
-		changeTab(document.getElementById("patientOverviewTab"));
-		$j("#patientsummaryIdTab").parent().hide();
-		$j("#patientsummaryId").hide();
-	}
-	else if(${model.summaryToLoad != null}){
-		//we have one configure report design, fetch the data but dont rendere it
-		jQuery.get(
-				pageUrlPrefix+"processAjaxRequest.htm", 
-				{patientId: "${model.patient.patientId}", reportDesignUuid: "${model.summaryToLoad.reportDesign.uuid}"}, 
-				function(data) {
-					loadedSummaryResults = data;
-				}
-			);
-	}
-	
-	//set the dialog to display results
-	$j("#patientsummary_reportDesignDialog").dialog({
-		autoOpen: false,
-		width: '90%',
-		height: '80%',
-		modal: true,
-		beforeClose: function(event, ui){
-			//clear
-			$j("#patientsummary_reportDesignDialog > iframe").attr("src", "about:blank");
-			$j("#reportDesignFrame").hide();
-			$j("#preloadedResults").html('');
-			$j("#preloadedResults").hide();
-			$j("#resultsError").html('');
-			$j("#resultsError").hide();
+	$j(document).ready(function() {
+		// Hide the patient summary tab if no patient summaries are configured for display
+		if (${numSums} == 0) {
+			changeTab(document.getElementById("patientOverviewTab"));
+			$j("#patientsummaryIdTab").parent().hide();
+			$j("#patientsummaryId").hide();
+		}
+		// Display any default summary that is configured 
+		else if (${defaultId > 0}) {
+			loadPatientSummary(${defaultId});
 		}
 	});
-});
-
-function patientsummary_view(){
-	var rdUuid = $j.trim($j("#reportDesignSelect").val());
-	if(rdUuid == ''){
-		alert("<spring:message code="patientsummary.error.selectSummary" />");
-		return;
-	}
 	
-	//Dislay the preloaded ajax results if any
-	if(loadedSummaryResults != undefined){
-		$j("#preloadedResults").html(loadedSummaryResults['results']);
-		$j("#preloadedResults").show();
-		if(loadedSummaryResults['errorDetails'] != undefined){
-			$j("#resultsError").html(loadedSummaryResults['errorDetails']);
-			$j("#resultsError").show();
+	function loadPatientSummary(summaryId) {
+		if (!summaryId) {
+			summaryId = jQuery("#summarySelect").val();
 		}
-		//clear so that we dont get back here until next page load
-		loadedSummaryResults = null;
-	}else{
-		$j("#reportDesignFrame").show();
-		$j("#patientsummary_reportDesignDialog > iframe").attr("src", pageUrlPrefix+"viewPatientSummary.htm?patientId=${model.patient.patientId}&reportDesignUuid="+rdUuid+"&showParametersFormIfNecessary=true");
+		if (summaryId && summaryId != '') {
+			$j("#${model.portletUUID}LoadingDiv").show();
+			$j("#${model.portletUUID}OutputDiv").load(
+				"<openmrs:contextPath />/module/patientsummary/viewPatientSummary.form?patientId=${model.patientId}&summaryId="+summaryId,
+				function() {
+					$j("#${model.portletUUID}LoadingDiv").hide();
+				}
+			);
+		}
+		else {
+			$j("#${model.portletUUID}OutputDiv").html("");
+		}
 	}
-	
-	$j("#patientsummary_reportDesignDialog").dialog('open');
-}
 </script>
 
 <style type="text/css">
-div#reportDesignSelectDiv {	
-	padding-top: 5px; padding-bottom: 5px;
-}
-div#patientsummary_reportDesignDialog {
-	min-height: 600px !important;/* Firefox can't recognise the 90% perhaps one of the parent elements in core has no height' */
-	width: 90% !important; 
-	height: 80% !important; 
-}
-#reportDesignFrame {
-	display: none;
-}
+	div#patientSummarySelectDiv {	
+		padding-top: 5px; padding-bottom: 5px;
+	}
 </style>
 
-<div id="reportDesignSelectDiv">
-	<b><spring:message code="patientsummary.selectReportDesign" /></b>:
-	<select id="reportDesignSelect">
-		<option></option>
-		<c:forEach items="${model.patientSummaries}" var="ps">		
-		<option value="${ps.reportDesign.uuid}">${ps.reportDesign.name}</option>
-		</c:forEach>
-	</select>
-	<input type="button" value="<spring:message code="patientsummary.view" />" onclick="patientsummary_view()" />
+<div id="patientSummarySelectDiv">
+	<c:if test="${numSums > 1}">
+		<b><spring:message code="patientsummary.selectSummary"/></b>:
+		<select id="summarySelect">
+			<option value=""><spring:message code="patientsummary.choose"/>...</option>
+			<c:forEach items="${model.patientSummaries}" var="ps">		
+				<option value="${ps.reportDesign.id}"<c:if test="${defaultId == ps.reportDesign.id}"> selected</c:if>>${ps.reportDesign.name}</option>
+			</c:forEach>
+		</select>
+		<input type="button" value="<spring:message code="patientsummary.view" />" onclick="loadPatientSummary();" />
+	</c:if>
 </div>
-	
-<div id="patientsummary_reportDesignDialog" title="<spring:message code="patientsummary.patientSummary" />">
-	<iframe id="reportDesignFrame" width="100%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
-	
-	<div id="resultsError" class="error" style="display: none"></div>	
-	<div id="preloadedResults" style="display: none; width: 100%; height: 100%">
-	</div>
+
+<div id="${model.portletUUID}LoadingDiv" style="width:100%; text-align:center; padding-top:50px; display:none;">
+	<b><spring:message code="patientsummary.loadingMessage"/></b>
+	<br/>
+	<img src="<c:url value="/images/loading.gif"/>" width="24" height="24" border="0" style="vertical-align:middle"/>
+</div>
+<div id="${model.portletUUID}OutputDiv" style="width:100%;">
 </div>

@@ -38,7 +38,7 @@
 				<tr>
 					<td></td>
 					<td valign="top" style="padding-top: 10px" colspan="2">					
-						<input type="hidden" name="reportDesignUuid" value="${reportDesignUuid}" />
+						<input type="hidden" name="summaryId" value="${summaryId}" />
 						<input type="hidden" name="patientId" value="${patientId}" />			
 						<input type="submit" value="<spring:message code="general.submit" />" />
 					</td>

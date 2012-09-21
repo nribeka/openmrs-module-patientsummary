@@ -27,7 +27,9 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.htmlwidgets.web.WidgetUtil;
-import org.openmrs.module.patientsummary.PatientSummaryConstants;
+import org.openmrs.module.patientsummary.PatientSummary;
+import org.openmrs.module.patientsummary.api.PatientSummaryService;
+import org.openmrs.module.patientsummary.util.ConfigurationUtil;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportData;
@@ -50,36 +52,30 @@ public class ViewPatientSummaryFormController {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	private static final String VIEW_PATIENT_SUMMARY_FORM = "/module/" + PatientSummaryConstants.MODULE_ID
-	        + "/viewPatientSummary";
-	
 	/**
 	 * Receives requests to run a report design
-	 * 
 	 * @param model
 	 * @param reportDesignUuid the uuid of the report design
 	 * @param patientId the patient's id
-	 * @param showParametersFormIfNecessary specifies if we need to prompt the user for required
-	 *            parameter values
-	 * @param request
-	 * @param response
-	 * @return
+	 * @param showParametersFormIfNecessary specifies if we need to prompt the user for requiredparameter values
 	 */
-	@RequestMapping(VIEW_PATIENT_SUMMARY_FORM)
-	public String viewPatientSummary(ModelMap model,
+	@RequestMapping("/module/" + ConfigurationUtil.MODULE_ID + "/viewPatientSummary")
+	public void viewPatientSummary(ModelMap model,
 	                                 @RequestParam("reportDesignUuid") String reportDesignUuid,
 	                                 @RequestParam("patientId") Integer patientId,
 	                                 @RequestParam(required = false, value = "showParametersFormIfNecessary") boolean showParametersFormIfNecessary,
 	                                 HttpServletRequest request, HttpServletResponse response) {
 		
-		ReportDesign rd = Context.getService(ReportService.class).getReportDesignByUuid(reportDesignUuid);
-		if (rd != null) {
+		PatientSummary ps = Context.getService(PatientSummaryService.class).getPatientSummaryByUuid(reportDesignUuid);
+		if (ps != null) {
+			ReportDesign rd = ps.getReportDesign();
 			if (showParametersFormIfNecessary && !rd.getReportDefinition().getParameters().isEmpty()) {
 				model.addAttribute("showParametersForm", true);
 				model.addAttribute("reportDesignUuid", reportDesignUuid);
 				model.addAttribute("patientId", patientId);
 				model.addAttribute("parameters", rd.getReportDefinition().getParameters());
-			} else {
+			} 
+			else {
 				Map<String, Object> parameterValueMap = new HashMap<String, Object>();
 				Map<String, String> parameterErrors = null;
 				if (!rd.getReportDefinition().getParameters().isEmpty()) {
@@ -98,11 +94,8 @@ public class ViewPatientSummaryFormController {
 				
 				if (MapUtils.isEmpty(parameterErrors)) {
 					processRequest(model, patientId, rd, response, parameterValueMap);
-					if (!SimpleHtmlReportRenderer.class.isAssignableFrom(rd.getRendererType())) {
-						//Nothing else to write and the output stream is already closed above
-						return null;
-					}
-				} else {
+				} 
+				else {
 					model.addAttribute("showParametersForm", true);
 					model.addAttribute("reportDesignUuid", reportDesignUuid);
 					model.addAttribute("patientId", patientId);
@@ -112,8 +105,6 @@ public class ViewPatientSummaryFormController {
 				}
 			}
 		}
-		
-		return VIEW_PATIENT_SUMMARY_FORM;
 	}
 	
 	/**
@@ -124,7 +115,7 @@ public class ViewPatientSummaryFormController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping("/module/" + PatientSummaryConstants.MODULE_ID + "/processAjaxRequest")
+	@RequestMapping("/module/" + ConfigurationUtil.MODULE_ID + "/processAjaxRequest")
 	public Object processAjaxRequest(@RequestParam("reportDesignUuid") String reportDesignUuid,
 	                                 @RequestParam("patientId") Integer patientId) {
 		

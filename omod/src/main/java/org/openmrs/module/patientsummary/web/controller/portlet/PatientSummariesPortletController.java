@@ -19,9 +19,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.openmrs.module.patientsummary.PatientSummaryUtil;
-import org.openmrs.module.reporting.report.ReportDesign;
-import org.openmrs.module.reporting.report.renderer.SimpleHtmlReportRenderer;
+import org.openmrs.module.patientsummary.PatientSummary;
+import org.openmrs.module.patientsummary.util.ConfigurationUtil;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.controller.PortletController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,21 +34,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class PatientSummariesPortletController extends PortletController {
 	
 	/**
-	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,
-	 *      java.util.Map)
+	 * @see PortletController#populateModel(HttpServletRequest, Map)
 	 */
 	@Override
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
-		List<ReportDesign> reportDesigns = PatientSummaryUtil.getReportDesigns();
-		model.put("reportDesigns", reportDesigns);
-		boolean getSummaryOnPageLoad = false;
-		if (reportDesigns.size() == 1) {
-			ReportDesign reportDesign = reportDesigns.get(0);
-			if (SimpleHtmlReportRenderer.class.isAssignableFrom(reportDesign.getRendererType())
-			        && reportDesign.getReportDefinition().getParameters().isEmpty()) {
-				getSummaryOnPageLoad = true;
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		List<PatientSummary> patientSummaries = ConfigurationUtil.getPatientSummariesForDashboard();
+		model.put("patientSummaries", patientSummaries);
+		if (patientSummaries.size() == 1) {
+			PatientSummary ps = patientSummaries.get(0);
+			if (ps.getReportDesign().getReportDefinition().getParameters().isEmpty()) {
+				model.put("summaryToLoad", ps);
 			}
 		}
-		model.put("getSummaryOnPageLoad", getSummaryOnPageLoad);
 	}
 }

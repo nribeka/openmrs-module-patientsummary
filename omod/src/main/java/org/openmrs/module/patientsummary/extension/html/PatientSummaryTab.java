@@ -13,8 +13,8 @@
  */
 package org.openmrs.module.patientsummary.extension.html;
 
-import org.openmrs.module.patientsummary.PatientSummaryConstants;
-import org.openmrs.module.patientsummary.PatientSummaryUtil;
+import org.openmrs.module.patientsummary.util.ConfigurationUtil;
+import org.openmrs.module.patientsummary.util.PrivilegeUtil;
 import org.openmrs.module.web.extension.PatientDashboardTabExt;
 
 /**
@@ -23,7 +23,7 @@ import org.openmrs.module.web.extension.PatientDashboardTabExt;
 public class PatientSummaryTab extends PatientDashboardTabExt {
 	
 	/**
-	 * @see org.openmrs.module.web.extension.PatientDashboardTabExt#getPortletUrl()
+	 * @see PatientDashboardTabExt#getPortletUrl()
 	 */
 	@Override
 	public String getPortletUrl() {
@@ -31,26 +31,26 @@ public class PatientSummaryTab extends PatientDashboardTabExt {
 	}
 	
 	/**
-	 * @see org.openmrs.module.web.extension.PatientDashboardTabExt#getRequiredPrivilege()
+	 * @see PatientDashboardTabExt#getRequiredPrivilege()
 	 */
 	@Override
 	public String getRequiredPrivilege() {
-		return PatientSummaryConstants.PRIV_VIEW_PATIENT_SUMMARIES;
+		return PrivilegeUtil.PRIV_VIEW_PATIENT_SUMMARIES;
 	}
 	
 	/**
-	 * @see org.openmrs.module.web.extension.PatientDashboardTabExt#getTabId()
+	 * @see PatientDashboardTabExt#getTabId()
 	 */
 	@Override
 	public String getTabId() {
-		return PatientSummaryConstants.MODULE_ID + "Id";
+		return ConfigurationUtil.MODULE_ID + "Id";
 	}
 	
 	/**
-	 * @see org.openmrs.module.web.extension.PatientDashboardTabExt#getTabName()
+	 * @see PatientDashboardTabExt#getTabName()
 	 */
 	@Override
 	public String getTabName() {
-		return PatientSummaryUtil.getPatientSummaryTabName();
+		return ConfigurationUtil.getPatientSummaryTabName();
 	}
 }

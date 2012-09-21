@@ -1,20 +1,21 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
 <script type="text/javascript">
-var reportCount = ${fn:length(model.reportDesigns)};
+var reportCount = ${fn:length(model.patientSummaries)};
 var pageUrlPrefix = "<openmrs:contextPath />/module/patientsummary/";
 var loadedSummaryResults = null;
 $j(document).ready(function(){
 	//no configured reports, switch to the overview tab and hide the patient summary tab
-	if(${fn:length(model.reportDesigns)} == 0){
+	if(${fn:length(model.patientSummaries)} == 0){
 		changeTab(document.getElementById("patientOverviewTab"));
 		$j("#patientsummaryIdTab").parent().hide();
 		$j("#patientsummaryId").hide();
-	}else if(${model.getSummaryOnPageLoad}){
+	}
+	else if(${model.summaryToLoad != null}){
 		//we have one configure report design, fetch the data but dont rendere it
 		jQuery.get(
 				pageUrlPrefix+"processAjaxRequest.htm", 
-				{patientId: "${model.patient.patientId}", reportDesignUuid: "${model.reportDesigns[0].uuid}"}, 
+				{patientId: "${model.patient.patientId}", reportDesignUuid: "${model.summaryToLoad.reportDesign.uuid}"}, 
 				function(data) {
 					loadedSummaryResults = data;
 				}
@@ -83,8 +84,8 @@ div#patientsummary_reportDesignDialog {
 	<b><spring:message code="patientsummary.selectReportDesign" /></b>:
 	<select id="reportDesignSelect">
 		<option></option>
-		<c:forEach items="${model.reportDesigns}" var="reportDesign">		
-		<option value="${reportDesign.uuid}">${reportDesign.name}</option>
+		<c:forEach items="${model.patientSummaries}" var="ps">		
+		<option value="${ps.reportDesign.uuid}">${ps.reportDesign.name}</option>
 		</c:forEach>
 	</select>
 	<input type="button" value="<spring:message code="patientsummary.view" />" onclick="patientsummary_view()" />

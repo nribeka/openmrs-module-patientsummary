@@ -11,24 +11,13 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.patientsummary;
+package org.openmrs.module.patientsummary.util;
 
 /**
- * Constants used by the module.
+ * This class encapsulates all of the privilege management needed for the module
  */
-public final class PatientSummaryConstants {
+public class PrivilegeUtil {
 	
-	public static final String MODULE_ID = "patientsummary";
-	
-	public static final String DEFAULT_TAB_NAME_OR_MSG_CODE = MODULE_ID + ".defaultTabNameMessageCode";
-	
-	//================ Global Property Constants =======================
-	
-	public static final String GP_PATIENT_SUMMARY_TAB_NAME = MODULE_ID + ".tabNameOrMessageCode";
-	
-	public static final String GP_REPORT_DESIGN_UUIDS = MODULE_ID + ".reportDesignUuids";
-	
-	//================ Privilege constants =============================
-	
+	//**** PRIVILEGE CONSTANTS *****
 	public static final String PRIV_VIEW_PATIENT_SUMMARIES = "View Patient Summaries";
 }

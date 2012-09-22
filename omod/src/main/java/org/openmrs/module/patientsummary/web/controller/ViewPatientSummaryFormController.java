@@ -47,7 +47,8 @@ public class ViewPatientSummaryFormController {
 	@RequestMapping("/module/" + ConfigurationUtil.MODULE_ID + "/viewPatientSummary")
 	public void viewPatientSummary(ModelMap model, HttpServletRequest request, HttpServletResponse response,
 									@RequestParam("patientId") Integer patientId,                       
-									@RequestParam("summaryId") Integer summaryId) throws IOException {		
+									@RequestParam("summaryId") Integer summaryId,
+									@RequestParam(value="download",required=false) boolean download) throws IOException {		
 		try {
 			PatientSummaryService pss = Context.getService(PatientSummaryService.class);
 			PatientSummary ps = pss.getPatientSummary(summaryId);
@@ -56,6 +57,11 @@ public class ViewPatientSummaryFormController {
 				result.getErrorDetails().printStackTrace(response.getWriter());
 			} 
 			else {
+				if (download) {
+					response.setHeader("Content-Type", ps.getContentType());
+					response.setHeader("Content-Disposition", "attachment; filename=\"" + ps.getExportFilename() + "\"");
+				}
+				response.setContentType(ps.getContentType());
 				response.getOutputStream().write(result.getRawContents());
 			}
 		}

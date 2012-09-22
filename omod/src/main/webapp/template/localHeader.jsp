@@ -10,13 +10,4 @@
             <spring:message code="patientsummary.manage" />
         </a>
 	</li>
-    <li <c:if test='<%= request.getRequestURI().contains("/generateSummaries") %>'>class="active"</c:if>>
-        <a href="${pageContext.request.contextPath}/module/patientsummary/summary/generateSummaries.form">
-            <spring:message code="patientsummary.generate"/>
-        </a>
-    </li>
-	
-	<!-- Add further links here -->
 </ul>
-<h3><spring:message code="patientsummary.title" /></h3>
-<hr/>

@@ -56,7 +56,21 @@ public class PatientSummary {
 		catch (Exception e) {
 			log.warn("Unable to retrieve content type for patient summary: " + reportDesign);
 		}
-		return null;
+		return "text/plain";
+	}
+	
+	/**
+	 * @return the filename for this PatientSummary for use when exporting
+	 */
+	public String getExportFilename() {
+		try {
+			ReportRenderer rr = reportDesign.getRendererType().newInstance();
+			return rr.getFilename(reportDesign.getReportDefinition(), reportDesign.getUuid());
+		}
+		catch (Exception e) {
+			log.warn("Unable to retrieve file name for patient summary: " + reportDesign);
+		}
+		return "summary.txt";
 	}
 	
 	/**

@@ -13,25 +13,28 @@
 		}
 		// Display any default summary that is configured 
 		else if (${defaultId > 0}) {
-			loadPatientSummary(${defaultId});
+			loadPatientSummary('${defaultId}_${model.defaultSummary.contentType}');
 		}
 	});
 	
-	function loadPatientSummary(summaryId) {
-		if (!summaryId) {
-			summaryId = jQuery("#summarySelect").val();
-		}
-		if (summaryId && summaryId != '') {
+	function loadPatientSummary(summaryAndContentType) {
+		var split = summaryAndContentType.split("_");
+		var summaryId = split[0];
+		var contentType = split[1];
+		$j(".summaryButtons").hide();
+		$j("#${model.portletUUID}OutputDiv").html("");
+		if (contentType.indexOf("text") != -1) {
 			$j("#${model.portletUUID}LoadingDiv").show();
 			$j("#${model.portletUUID}OutputDiv").load(
 				"<openmrs:contextPath />/module/patientsummary/viewPatientSummary.form?patientId=${model.patientId}&summaryId="+summaryId,
 				function() {
 					$j("#${model.portletUUID}LoadingDiv").hide();
+					$j("#summaryButton"+summaryId).show();
 				}
 			);
 		}
 		else {
-			$j("#${model.portletUUID}OutputDiv").html("");
+			$j("#summaryButton"+summaryId).show();
 		}
 	}
 </script>
@@ -44,12 +47,19 @@
 
 <div id="patientSummarySelectDiv">
 	<c:if test="${numSums > 1}">
-		<select id="summarySelect" onchange="loadPatientSummary();">
+		<select id="summarySelect" onchange="loadPatientSummary(this.value);">
 			<c:forEach items="${model.patientSummaries}" var="ps">		
-				<option value="${ps.reportDesign.id}"<c:if test="${defaultId == ps.reportDesign.id}"> selected</c:if>>${ps.reportDesign.name}</option>
+				<option value="${ps.reportDesign.id}_${ps.contentType}"<c:if test="${defaultId == ps.reportDesign.id}"> selected</c:if>>${ps.reportDesign.name}</option>
 			</c:forEach>
 		</select>
 	</c:if>
+	<c:forEach items="${model.patientSummaries}" var="ps">
+		<span id="summaryButton${ps.id}" class="summaryButtons">
+			<button onclick="document.location.href='<openmrs:contextPath />/module/patientsummary/viewPatientSummary.form?download=true&patientId=${model.patientId}&summaryId=${ps.id}';">
+				<spring:message code="patientsummary.download"/>
+			</button>
+		</span>
+	</c:forEach>
 </div>
 
 <div id="${model.portletUUID}LoadingDiv" style="width:100%; text-align:center; padding-top:50px; display:none;">

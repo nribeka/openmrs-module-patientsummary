@@ -134,7 +134,7 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 			renderer.render(data, rendererArg, baos);
 			
 			// Return a PatientSummaryResult which contains the raw output and contextual data
-			result.setContentType(renderer.getRenderedContentType(summary.getReportDesign().getReportDefinition(), rendererArg));
+			result.setContentType(summary.getContentType());
 			result.setRawContents(baos.toByteArray());
 		}
 		catch (Throwable t) {

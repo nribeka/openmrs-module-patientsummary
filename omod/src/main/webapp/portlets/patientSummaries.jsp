@@ -44,14 +44,11 @@
 
 <div id="patientSummarySelectDiv">
 	<c:if test="${numSums > 1}">
-		<b><spring:message code="patientsummary.selectSummary"/></b>:
-		<select id="summarySelect">
-			<option value=""><spring:message code="patientsummary.choose"/>...</option>
+		<select id="summarySelect" onchange="loadPatientSummary();">
 			<c:forEach items="${model.patientSummaries}" var="ps">		
 				<option value="${ps.reportDesign.id}"<c:if test="${defaultId == ps.reportDesign.id}"> selected</c:if>>${ps.reportDesign.name}</option>
 			</c:forEach>
 		</select>
-		<input type="button" value="<spring:message code="patientsummary.view" />" onclick="loadPatientSummary();" />
 	</c:if>
 </div>
 

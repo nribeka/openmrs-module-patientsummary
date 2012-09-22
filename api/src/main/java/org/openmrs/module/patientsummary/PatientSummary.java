@@ -13,12 +13,17 @@
  */
 package org.openmrs.module.patientsummary;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 
 /**
  * Represents a particular Patient Summary
  */
 public class PatientSummary {
+	
+	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	//***** PROPERTIES *****
 	
@@ -41,10 +46,31 @@ public class PatientSummary {
 	//***** METHODS *****
 	
 	/**
+	 * @return the contentType for this PatientSummary
+	 */
+	public String getContentType() {
+		try {
+			ReportRenderer rr = reportDesign.getRendererType().newInstance();
+			return rr.getRenderedContentType(reportDesign.getReportDefinition(), reportDesign.getUuid());
+		}
+		catch (Exception e) {
+			log.warn("Unable to retrieve content type for patient summary: " + reportDesign);
+		}
+		return null;
+	}
+	
+	/**
 	 * @return the primary key id
 	 */
 	public Integer getId() {
 		return getReportDesign() != null ? getReportDesign().getId() : null;
+	}
+	
+	/**
+	 * @return the uuid
+	 */
+	public String getUuid() {
+		return getReportDesign() != null ? getReportDesign().getUuid() : null;
 	}
 	
 	/**

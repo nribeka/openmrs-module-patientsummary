@@ -85,7 +85,9 @@ public class PatientSummaryReportDefinitionEditorController {
 		model.addAttribute("report", rd);
 		model.addAttribute("designs", designs);
 		model.addAttribute("dsd", getDataSetDefinition(rd, session));
-		model.addAttribute("unsaved", session.getAttribute(PatientDataSetEditor.IS_UNSAVED_ATTR));
+		if (session.getAttribute(PatientDataSetEditor.IS_UNSAVED_ATTR) != null) {
+			model.addAttribute("unsaved", session.getAttribute(PatientDataSetEditor.IS_UNSAVED_ATTR));
+		}
 		
 		return FORM_URL_PREFIX + "patientSummaryReportDefinitionEditor";
 	}
@@ -264,9 +266,9 @@ public class PatientSummaryReportDefinitionEditorController {
 	 * @see org.openmrs.module.reporting.web.datasets.PatientDataSetEditor#discard(javax.servlet.http.HttpSession)
 	 */
 	@RequestMapping(value = FORM_URL_PREFIX + "patientDataSetEditor-discard", method = RequestMethod.POST)
-	public String discard(HttpSession session, @RequestParam("reportUuid") String reportUuid) {
+	public String discard(HttpSession session) {
 		getPatientDataSetEditorContoller().discard(session);
-		return PATIENT_SUMMARY_REPORT_DEF_LISTING;
+		return "redirect:patientSummaryReportDefinitions.form";
 	}
 	
 	private PatientDataSetEditor getPatientDataSetEditorContoller() {

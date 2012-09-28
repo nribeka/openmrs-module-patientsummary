@@ -13,11 +13,18 @@
  */
 package org.openmrs.module.patientsummary.web.controller;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
+import org.openmrs.module.patientsummary.api.PatientSummaryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller for the PatientSummaryReportDefinition list page
@@ -25,14 +32,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class PatientSummaryReportDefinitionsController {
 	
-	protected static Log log = LogFactory.getLog(PatientSummaryReportDefinitionsController.class);
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	@Autowired
+	@Qualifier("patientsummary.PatientSummaryService")
+	PatientSummaryService service;
 	
 	/**
-	 * Retrieves either an existing or new report to edit
+	 * Retrieves all patient summary reports
 	 */
 	@RequestMapping("/module/patientsummary/patientSummaryReportDefinitions")
-	public void getPatientSummaryReportDefinition(ModelMap model) {
+	public ModelMap listPatientSummaryReportDefinitions(ModelMap model,
+	                                                   @RequestParam(required = false, value = "includeRetired") Boolean includeRetired) {
 		
-		//TODO implement this see https://tickets.openmrs.org/browse/PS-11
+		// Get list of existing reports
+		boolean includeRet = (includeRetired == Boolean.TRUE);
+		List<PatientSummaryReportDefinition> reportDefinitions = service.getAllPatientSummaryReportDefinitions(includeRet);
+		
+		model.addAttribute("reportDefinitions", reportDefinitions);
+		
+		return model;
+	}
+	
+	@RequestMapping("/module/patientsummary/purgePatientSummaryReportDefinition")
+	public String purgePatientSummaryReportDefinition(String uuid) {
+		PatientSummaryReportDefinition reportDefinition = service.getPatientSummaryReportDefinitionByUuid(uuid);
+		service.purgeReportDefinition(reportDefinition);
+		
+		return "redirect:patientSummaryReportDefinitions.list";
 	}
 }

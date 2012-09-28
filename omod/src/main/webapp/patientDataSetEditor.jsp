@@ -1,5 +1,3 @@
-<%@ include file="/WEB-INF/view/module/reporting/include.jsp"%>
-
 <openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/reporting/scripts/jquery/validate/jquery.validate.min.js"/>
 <c:if test="${ pageContext.response.locale.language != 'en' }">
 	<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/reporting/scripts/jquery/validate/localization/messages_${ pageContext.response.locale.language }.js"/>
@@ -96,11 +94,9 @@ function submitColumnOrder(sortable) {
 	<div id="unsaved">
 		You have unsaved changes.
 		<form method="post" action="patientDataSetEditor-save.form">
-			<input type="hidden" name="reportUuid" value="${ report.uuid }" />
 			<input type="submit" value="<spring:message code="general.save"/>"/>
 		</form>
 		<form method="post" action="patientDataSetEditor-discard.form">
-			<input type="hidden" name="reportUuid" value="${ report.uuid }" />
 			<input type="submit" value="<spring:message code="reporting.discardButton"/>"/>
 		</form>
 	</div>

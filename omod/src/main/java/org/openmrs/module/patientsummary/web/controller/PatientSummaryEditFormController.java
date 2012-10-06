@@ -49,17 +49,17 @@ import org.springframework.web.context.request.WebRequest;
  * send the user back to the patient summary report editor or listing pages accordingly
  */
 @Controller
-public class PatientSummaryReportDefinitionEditorController {
+public class PatientSummaryEditFormController {
 	
-	protected static Log log = LogFactory.getLog(PatientSummaryReportDefinitionEditorController.class);
+	protected static Log log = LogFactory.getLog(PatientSummaryEditFormController.class);
 	
 	public final static String FORM_URL_PREFIX = "/module/patientsummary/";
 	
 	public final static String PATIENT_SUMMARY_REPORT_DEF_LISTING = FORM_URL_PREFIX + "patientSummaryReportDefinitions";
 	
-	public final static String REDIRECT = "redirect:patientSummaryReportDefinitionEditor.form?uuid=";
+	public final static String REDIRECT = "redirect:editSummary.form?uuid=";
 	
-	@RequestMapping(FORM_URL_PREFIX + "patientSummaryReportDefinitionEditor")
+	@RequestMapping(FORM_URL_PREFIX + "editSummary")
 	public String getPatientSummaryReportDefinition(HttpSession session, ModelMap model,
 	                                                @RequestParam(required = false, value = "uuid") String uuid) {
 		
@@ -89,7 +89,7 @@ public class PatientSummaryReportDefinitionEditorController {
 			model.addAttribute("unsaved", session.getAttribute(PatientDataSetEditor.IS_UNSAVED_ATTR));
 		}
 		
-		return FORM_URL_PREFIX + "patientSummaryReportDefinitionEditor";
+		return FORM_URL_PREFIX + "editSummary";
 	}
 	
 	public PatientDataSetDefinition getDataSetDefinition(PatientSummaryReportDefinition rd, HttpSession session) {

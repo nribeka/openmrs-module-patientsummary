@@ -85,14 +85,14 @@
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>reporting-api</artifactId>
-				<version>0.7.2</version>
+				<version>0.7.3</version>
 				<scope>provided</scope>
 			</dependency>
 			
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
 				<artifactId>reporting-omod</artifactId>
-				<version>0.7.2</version>
+				<version>0.7.3</version>
 				<scope>provided</scope>
 			</dependency>
 

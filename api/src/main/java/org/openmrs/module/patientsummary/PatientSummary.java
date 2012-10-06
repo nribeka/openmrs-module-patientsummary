@@ -93,6 +93,13 @@ public class PatientSummary {
 	public String getName() {
 		return getReportDesign() != null ? getReportDesign().getName() : null;
 	}
+	
+	/**
+	 * @return the associated patient summary report definition
+	 */
+	public PatientSummaryReportDefinition getReportDefinition() {
+		return getReportDesign() != null ? (PatientSummaryReportDefinition)getReportDesign().getReportDefinition() : null;
+	}
 
 	/**
 	 * @see Object#equals(Object)

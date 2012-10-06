@@ -17,14 +17,12 @@
   		    http://www.springframework.org/schema/util
   		    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<bean id="patientsummary.PatientSummaryService"
-		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<bean id="patientsummaryPatientSummaryService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager">
 			<ref bean="transactionManager" />
 		</property>
 		<property name="target">
-			<bean
-				class="org.openmrs.module.patientsummary.api.PatientSummaryServiceImpl" />
+			<bean class="org.openmrs.module.patientsummary.api.PatientSummaryServiceImpl" />
 		</property>
 		<property name="preInterceptors">
 			<ref bean="serviceInterceptors" />
@@ -36,9 +34,9 @@
 
 	<bean parent="serviceContext">
 		<property name="moduleService">
-			<list>
+			<list merge="true">
 				<value>org.openmrs.module.patientsummary.api.PatientSummaryService</value>
-				<ref bean="patientsummary.PatientSummaryService"/>
+				<ref bean="patientsummaryPatientSummaryService"/>
 			</list>
 		</property>
 	</bean>

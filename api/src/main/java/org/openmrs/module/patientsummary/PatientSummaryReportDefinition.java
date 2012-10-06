@@ -28,14 +28,14 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 @Localized("reporting.PatientSummaryReportDefinition")
 public class PatientSummaryReportDefinition extends ReportDefinition {
 	
-	public static final String DEFAULT_DATASET_KEY = "patients";
+	public static final String DEFAULT_DATASET_KEY = "patient";
 	
 	/**
 	 * Default Constructor
 	 */
 	public PatientSummaryReportDefinition() {
 		super();
-		addDataSetDefinition(DEFAULT_DATASET_KEY, new Mapped<DataSetDefinition>(new PatientDataSetDefinition(), null));
+		setPatientDataSetDefinition(new PatientDataSetDefinition());
 	}
 	
 	/**
@@ -43,17 +43,7 @@ public class PatientSummaryReportDefinition extends ReportDefinition {
 	 */
 	@Override
 	public void addDataSetDefinition(String key, Mapped<? extends DataSetDefinition> definition) {
-		if (!(definition.getParameterizable() instanceof PatientDataSetDefinition)) {
-			throw new PatientSummaryException("Only PatientDataSetDefinition can be added");
-		} else if (getDataSetDefinitions().size() > 1) {
-			throw new PatientSummaryException(
-			        "Cannot add more than one PatientDataSetDefinition");
-		} else if (getDataSetDefinitions().size() == 1 && !getDataSetDefinitions().containsKey(key)) {
-			throw new PatientSummaryException(
-			        "Cannot add PatientDataSetDefinition, becuase PatientSummarReportDefinition contains non patient definition");
-		} else {
-			getDataSetDefinitions().put(key, definition);
-		}
+		throw new PatientSummaryException("The PatientSummaryReportDefinition does not support multiple DataSetDefinitions");
 	}
 	
 	/**
@@ -61,5 +51,12 @@ public class PatientSummaryReportDefinition extends ReportDefinition {
 	 */
 	public PatientDataSetDefinition getPatientDataSetDefinition() {
 		return (PatientDataSetDefinition) getDataSetDefinitions().get(DEFAULT_DATASET_KEY).getParameterizable();
+	}
+	
+	/**
+	 * @return the underlying PatientDataSetDefinition
+	 */
+	public void setPatientDataSetDefinition(PatientDataSetDefinition pdsd) {
+		getDataSetDefinitions().put(DEFAULT_DATASET_KEY, new Mapped<DataSetDefinition>(pdsd, null));
 	}
 }

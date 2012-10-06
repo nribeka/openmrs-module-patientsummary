@@ -26,7 +26,7 @@
 		if (contentType.indexOf("text") != -1) {
 			$j("#${model.portletUUID}LoadingDiv").show();
 			$j("#${model.portletUUID}OutputDiv").load(
-				"<openmrs:contextPath />/module/patientsummary/viewPatientSummary.form?patientId=${model.patientId}&summaryId="+summaryId,
+				"<openmrs:contextPath />/module/patientsummary/renderSummary.form?patientId=${model.patientId}&summaryId="+summaryId,
 				function() {
 					$j("#${model.portletUUID}LoadingDiv").hide();
 					$j("#summaryButton"+summaryId).show();
@@ -55,7 +55,7 @@
 	</c:if>
 	<c:forEach items="${model.patientSummaries}" var="ps">
 		<span id="summaryButton${ps.id}" class="summaryButtons">
-			<button onclick="document.location.href='<openmrs:contextPath />/module/patientsummary/viewPatientSummary.form?download=true&patientId=${model.patientId}&summaryId=${ps.id}';">
+			<button onclick="document.location.href='<openmrs:contextPath />/module/patientsummary/renderSummary.form?download=true&patientId=${model.patientId}&summaryId=${ps.id}';">
 				<spring:message code="patientsummary.download"/>
 			</button>
 		</span>

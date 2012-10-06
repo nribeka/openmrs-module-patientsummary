@@ -5,26 +5,14 @@
             <spring:message code="admin.title.short" />
         </a>
     </li>
-	<li <c:if test='<%= request.getRequestURI().contains("/manage") %>'>class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/module/patientsummary/manage.form">
-            <spring:message code="patientsummary.manage" />
+	<li <c:if test='<%= request.getRequestURI().contains("/manageSummaries") %>'>class="active"</c:if>>
+		<a href="${pageContext.request.contextPath}/module/patientsummary/manageSummaries.form">
+            <spring:message code="patientsummary.manageSummaries" />
         </a>
 	</li>
-
-	<li <c:if test='<%= request.getRequestURI().contains("/listAll") %>'>class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/module/patientsummary/listAllSummaries.form">
-            <spring:message code="patientsummary.listAllSummaries" />
+	<li <c:if test='<%= request.getRequestURI().contains("/previewSummaries") %>'>class="active"</c:if>>
+		<a href="${pageContext.request.contextPath}/module/patientsummary/previewSummaries.form">
+            <spring:message code="patientsummary.previewSummaries" />
         </a>
 	</li>
-
-    <li <c:if test='<%= request.getRequestURI().contains("/generateSummaries") %>'>class="active"</c:if>>
-        <a href="${pageContext.request.contextPath}/module/patientsummary/summary/generateSummaries.form">
-            <spring:message code="patientsummary.generate"/>
-        </a>
-    </li>
-    <li <c:if test='<%= request.getRequestURI().contains("/patientSummaryReportDefinitions") %>'>class="active"</c:if>>
-        <a href="${pageContext.request.contextPath}/module/patientsummary/patientSummaryReportDefinitions.list">
-            <spring:message code="patientsummary.managePatientSummaryReportDefinitions"/>
-        </a>
-    </li>
 </ul>

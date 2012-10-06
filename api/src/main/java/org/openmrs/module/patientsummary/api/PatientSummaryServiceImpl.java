@@ -71,6 +71,27 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 		}
 		return l;
 	}
+	
+	
+	/**
+     * @see PatientSummaryService#purgePatientSummaryReportDefinition(PatientSummaryReportDefinition)
+     */
+    @Override
+    public void purgePatientSummaryReportDefinition(PatientSummaryReportDefinition reportDefinition) {
+    	getReportDefinitionService().purgeDefinition(reportDefinition);
+    }
+    
+	/**
+	 * @see PatientSummaryService#getPatientSummaries(ReportDefinition, boolean)
+	 */
+	@Override
+	public List<PatientSummary> getPatientSummaries(PatientSummaryReportDefinition reportDefinition, boolean includeRetired) {
+		List<PatientSummary> ret = new ArrayList<PatientSummary>();
+		for (ReportDesign d : getReportService().getReportDesigns(reportDefinition, null, includeRetired)) {
+			ret.add(new PatientSummary(d));
+		}
+		return ret;
+	}
 
 	/**
 	 * @see PatientSummaryService#getPatientSummary(Integer)
@@ -145,6 +166,14 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 		}
 		return result;
 	}
+	
+	/**
+     * @see PatientSummaryService#purgePatientSummary(PatientSummary)
+     */
+    @Override
+    public void purgePatientSummary(PatientSummary patientSummary) {
+    	getReportService().purgeReportDesign(patientSummary.getReportDesign());
+    }
 
 	/**
 	 * @return the underlying ReportService used to manage the patient summary report definitions
@@ -159,12 +188,4 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 	protected ReportService getReportService() {
 		return Context.getService(ReportService.class);
 	}
-
-	/**
-     * @see org.openmrs.module.patientsummary.api.PatientSummaryService#purgeReportDefinition(org.openmrs.module.patientsummary.PatientSummaryReportDefinition)
-     */
-    @Override
-    public void purgeReportDefinition(PatientSummaryReportDefinition reportDefinition) {
-    	getReportDefinitionService().purgeDefinition(reportDefinition);
-    }
 }

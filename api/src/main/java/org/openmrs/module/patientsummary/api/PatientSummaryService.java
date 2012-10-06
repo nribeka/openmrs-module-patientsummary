@@ -46,6 +46,17 @@ public interface PatientSummaryService extends OpenmrsService {
 	public List<PatientSummaryReportDefinition> getAllPatientSummaryReportDefinitions(boolean includeRetired);
 	
 	/**
+     * Purges the passed PatientSummaryReportDefinition from the database
+     */
+	@Transactional
+    public void purgePatientSummaryReportDefinition(PatientSummaryReportDefinition reportDefinition);
+	
+	/** 
+	 * Return all the PatientSummaries for a given PatientSummaryReportDefinition
+	 */
+	public List<PatientSummary> getPatientSummaries(PatientSummaryReportDefinition reportDefinition, boolean includeRetired);
+	
+	/**
 	 * @return the PatientSummary referenced by the passed id
 	 */
 	@Transactional(readOnly = true)
@@ -68,11 +79,10 @@ public interface PatientSummaryService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public PatientSummaryResult evaluatePatientSummary(PatientSummary summary, Integer patientId, Map<String, Object> parameters);
-
+	
 	/**
-     * Purges the given report definition.
-     * 
-     * @param reportDefinition
+     * Purges the passed PatientSummary from the database
      */
-    public void purgeReportDefinition(PatientSummaryReportDefinition reportDefinition);
+	@Transactional
+    public void purgePatientSummary(PatientSummary patientSummary);
 }

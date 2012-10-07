@@ -25,7 +25,7 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
  * 
  * @see ReportDefinition
  */
-@Localized("reporting.PatientSummaryReportDefinition")
+@Localized("patientsummary.PatientSummaryReportDefinition")
 public class PatientSummaryReportDefinition extends ReportDefinition {
 	
 	public static final String DEFAULT_DATASET_KEY = "patient";

@@ -19,14 +19,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
-import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
 import org.openmrs.module.patientsummary.PatientSummaryResult;
+import org.openmrs.module.patientsummary.PatientSummaryTemplate;
+import org.openmrs.module.reporting.dataset.definition.PatientDataSetDefinition;
+import org.openmrs.module.reporting.dataset.definition.service.DataSetDefinitionService;
+import org.openmrs.module.reporting.definition.service.DefinitionService;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -34,6 +38,7 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.service.ReportService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The core implementation of {@link PatientSummaryService}.
@@ -188,4 +193,20 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 	protected ReportService getReportService() {
 		return Context.getService(ReportService.class);
 	}
+
+	/**
+     * @see org.openmrs.module.patientsummary.api.PatientSummaryService#savePatientSummaryReportDefinition(org.openmrs.module.patientsummary.PatientSummaryReportDefinition)
+     */
+    @Override
+    @Transactional
+    public PatientSummaryReportDefinition savePatientSummaryReportDefinition(PatientSummaryReportDefinition rd) {
+    	PatientDataSetDefinition patientDataSetDefinition = rd.getPatientDataSetDefinition();
+    	if (StringUtils.isBlank(patientDataSetDefinition.getName())) {
+    		patientDataSetDefinition.setName("Patient Dataset for " + rd.getName());
+    	}
+    	
+    	Context.getService(DataSetDefinitionService.class).saveDefinition(patientDataSetDefinition);
+    	
+    	return getReportDefinitionService().saveDefinition(rd);
+    }
 }

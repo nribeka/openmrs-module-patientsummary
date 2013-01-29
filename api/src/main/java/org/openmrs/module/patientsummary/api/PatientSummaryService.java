@@ -85,4 +85,11 @@ public interface PatientSummaryService extends OpenmrsService {
      */
 	@Transactional
     public void purgePatientSummaryTemplate(PatientSummaryTemplate patientSummary);
+
+	/**
+     * Saves the passed {@link PatientSummaryReportDefinition}.
+     * 
+     * @param rd
+     */
+    public PatientSummaryReportDefinition savePatientSummaryReportDefinition(PatientSummaryReportDefinition rd);
 }

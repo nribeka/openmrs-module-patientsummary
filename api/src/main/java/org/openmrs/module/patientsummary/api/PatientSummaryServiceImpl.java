@@ -134,8 +134,8 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 	 * @see PatientSummaryService#evaluatePatientSummaryTemplate(PatientSummaryTemplate, Integer, Map)
 	 */
 	@Override
-	public PatientSummaryResult evaluatePatientSummaryTemplate(PatientSummaryTemplate summary, Integer patientId, Map<String, Object> parameters) {
-		PatientSummaryResult result = new PatientSummaryResult(summary, patientId, parameters);
+	public PatientSummaryResult evaluatePatientSummaryTemplate(PatientSummaryTemplate patientSummaryTemplate, Integer patientId, Map<String, Object> parameters) {
+		PatientSummaryResult result = new PatientSummaryResult(patientSummaryTemplate, patientId, parameters);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			// Populate a new EvaluationContext with the patient and parameters passed in
@@ -151,16 +151,16 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 			
 			// Evaluate the PatientSummary with this context to produce the data to use to populate the summary
 			ReportDefinitionService rds = Context.getService(ReportDefinitionService.class);
-			ReportData data = rds.evaluate(summary.getReportDesign().getReportDefinition(), context);
+			ReportData data = rds.evaluate(patientSummaryTemplate.getReportDesign().getReportDefinition(), context);
 			
 			// Render the template with this data to produce the raw data result
-			Class<? extends ReportRenderer> rendererType = summary.getReportDesign().getRendererType();
+			Class<? extends ReportRenderer> rendererType = patientSummaryTemplate.getReportDesign().getRendererType();
 			ReportRenderer renderer = rendererType.newInstance();
-			String rendererArg = summary.getReportDesign().getUuid();
+			String rendererArg = patientSummaryTemplate.getReportDesign().getUuid();
 			renderer.render(data, rendererArg, baos);
 			
 			// Return a PatientSummaryResult which contains the raw output and contextual data
-			result.setContentType(summary.getContentType());
+			result.setContentType(patientSummaryTemplate.getContentType());
 			result.setRawContents(baos.toByteArray());
 		}
 		catch (Throwable t) {
@@ -176,8 +176,8 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
      * @see PatientSummaryService#purgePatientSummaryTemplate(PatientSummaryTemplate)
      */
     @Override
-    public void purgePatientSummaryTemplate(PatientSummaryTemplate patientSummary) {
-    	getReportService().purgeReportDesign(patientSummary.getReportDesign());
+    public void purgePatientSummaryTemplate(PatientSummaryTemplate patientSummaryTemplate) {
+    	getReportService().purgeReportDesign(patientSummaryTemplate.getReportDesign());
     }
 
 	/**

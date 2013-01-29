@@ -78,13 +78,13 @@ public interface PatientSummaryService extends OpenmrsService {
 	 * @return the resulting patient summary result from evaluating the passed patient summary template for the given patient and parameters
 	 */
 	@Transactional(readOnly = true)
-	public PatientSummaryResult evaluatePatientSummaryTemplate(PatientSummaryTemplate summary, Integer patientId, Map<String, Object> parameters);
+	public PatientSummaryResult evaluatePatientSummaryTemplate(PatientSummaryTemplate patientSummaryTemplate, Integer patientId, Map<String, Object> parameters);
 	
 	/**
      * Purges the passed {@link PatientSummaryTemplate} from the database
      */
 	@Transactional
-    public void purgePatientSummaryTemplate(PatientSummaryTemplate patientSummary);
+    public void purgePatientSummaryTemplate(PatientSummaryTemplate patientSummaryTemplate);
 
 	/**
      * Saves the passed {@link PatientSummaryReportDefinition}.

@@ -49,14 +49,16 @@ $(function() {
 		$('#add-parameter-dialog').dialog('close');
 	});
 	$('#edit-dataset-button').click(function() {
-		window.location="../reporting/datasets/patientDataSetEditor.form?uuid=${ rd.patientDataSetDefinition.uuid }";
+		window.location="../reporting/datasets/patientDataSetEditor.form?uuid=${ rd.patientDataSetDefinition.uuid }" +
+			"&successUrl=/module/patientsummary/patientSummaryReportDefinitionEditor.form?uuid=${ rd.uuid }" +
+			"&discardUrl=/module/patientsummary/patientSummaryReportDefinitionEditor.form?uuid=${ rd.uuid }";
 	});
 });
 </script>
 
 <c:if test="${ unsaved }">
 	<div id="unsaved">
-		You have unsaved changes.
+		<spring:message code="patientsummary.unsavedChanges"/>
 		<form method="post" action="patientSummaryReportDefinitionEditor-save.form">
 			<input type="submit" value="<spring:message code="general.save"/>"/>
 		</form>
@@ -87,15 +89,15 @@ $(function() {
 	<br/>
 	
 	<div class="boxHeader">
-		Parameters
+		<spring:message code="reporting.Report.parameters" />
 		<input type="button" id="add-parameter-button" value="Add"/>
 	</div>
 	<div class="box">
 		<table>
 			<tr>
 				<th><spring:message code="general.name"/></th>
-				<th>Label</th>
-				<th>Type</th>
+				<th><spring:message code="reporting.Report.parameter.label"/></th>
+				<th><spring:message code="reporting.Report.parameter.type"/></th>
 				<th></th>
 			</tr>
 			<c:forEach var="p" items="${ rd.parameters }">
@@ -126,7 +128,7 @@ $(function() {
 	<br/>
 	
 	<div class="boxHeader">
-		Templates
+		<spring:message code="patientsummary.templates" />
 		<input type="button" id="add-template-button" value="Add"/>
 	</div>
 	<div class="box">
@@ -229,27 +231,14 @@ $(function() {
 <div style="float: left; margin-left: 2em; width: 50%">
 
 	<div class="boxHeader">
-		Data Schema
+		<spring:message code="patientsummary.dataSchema" />
 		<input type="button" id="edit-dataset-button" value="Edit"/>
 	</div>
 	<div class="box">
-		<ul id="sortable-columns">	
-			<c:forEach var="col" items="${ rd.patientDataSetDefinition.columnDefinitions }">
-				<li class="ui-state-default">
-					<span class="column-sort-icon ui-icon ui-icon-arrowthick-2-n-s"></span>
-					<span class="column-name">${ col.name }</span>
-					<br/>
-					<span class="column-description">
-						${ col.dataDefinition.parameterizable.name }
-						<c:forEach var="mapping" items="${ col.dataDefinition.parameterMappings }">
-							<br/>
-							&nbsp;&nbsp;
-							${ mapping.key } -> <rpt:format object="${ mapping.value }"/>
-						</c:forEach>
-					</span>
-				</li>
-			</c:forEach>
-		</ul>
+		<c:forEach var="col" items="${ rd.patientDataSetDefinition.columnDefinitions }">
+			<span class="column-name">${ col.name }</span>
+			<br/>
+		</c:forEach>
 	</div>
 </div>
 

@@ -209,4 +209,14 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
     	
     	return getReportDefinitionService().saveDefinition(rd);
     }
+
+	/**
+     * @see org.openmrs.module.patientsummary.api.PatientSummaryService#savePatientSummaryTemplate(org.openmrs.module.patientsummary.PatientSummaryTemplate)
+     */
+    @Override
+    public PatientSummaryTemplate savePatientSummaryTemplate(PatientSummaryTemplate template) {
+    	ReportDesign reportDesign = getReportService().saveReportDesign(template.getReportDesign());
+    	template.setReportDesign(reportDesign);
+    	return template;
+    }
 }

@@ -53,6 +53,9 @@ $(function() {
 			"&successUrl=/module/patientsummary/patientSummaryReportDefinitionEditor.form?uuid=${ rd.uuid }" +
 			"&discardUrl=/module/patientsummary/patientSummaryReportDefinitionEditor.form?uuid=${ rd.uuid }";
 	});
+	$('#add-template-button').click(function() {
+		window.location="templateEditor/newTemplate.form?reportDefinitionUuid=${ rd.uuid }";
+	});
 });
 </script>
 

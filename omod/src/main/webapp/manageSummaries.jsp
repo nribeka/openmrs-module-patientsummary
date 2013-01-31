@@ -78,6 +78,8 @@
 		</table>
 	
 	</div>
+	
+	<input type="button" value="Define a new Patient Summary" onclick="window.location='patientSummaryReportDefinitionEditor.form'"/>
 </div>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

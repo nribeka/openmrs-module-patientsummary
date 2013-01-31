@@ -92,4 +92,11 @@ public interface PatientSummaryService extends OpenmrsService {
      * @param rd
      */
     public PatientSummaryReportDefinition savePatientSummaryReportDefinition(PatientSummaryReportDefinition rd);
+
+	/**
+     * Saves the passed {@link PatientSummaryTemplate}.
+     * 
+     * @param template
+     */
+    public PatientSummaryTemplate savePatientSummaryTemplate(PatientSummaryTemplate template);
 }

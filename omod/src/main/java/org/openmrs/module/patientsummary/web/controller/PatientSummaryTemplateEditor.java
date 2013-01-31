@@ -22,6 +22,7 @@ import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
+import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  *
  */
 @Controller
-@RequestMapping("/module/patientsummary/templateEditor")
+@RequestMapping(PatientSummaryWebConstants.MODULE_URL + "templateEditor")
 public class PatientSummaryTemplateEditor {
 	
 	@RequestMapping(value = "/newTemplate", method = RequestMethod.GET)
@@ -43,6 +44,7 @@ public class PatientSummaryTemplateEditor {
 		
 		ReportDesign reportDesign = new ReportDesign();
 		reportDesign.setName("Untitled");
+		reportDesign.setRendererType(TextTemplateRenderer.class);
 		reportDesign.setReportDefinition(reportDefinition);
 		
 		PatientSummaryTemplate template = new PatientSummaryTemplate(reportDesign);
@@ -51,7 +53,7 @@ public class PatientSummaryTemplateEditor {
 		
 		model.put("template", template);
 		
-		return "templateEditor";
+		return PatientSummaryWebConstants.MODULE_URL + "templateEditor";
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)

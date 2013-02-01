@@ -13,22 +13,30 @@
  */
 package org.openmrs.module.patientsummary.web.controller;
 
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.openmrs.api.context.Context;
+import org.openmrs.module.htmlwidgets.web.handler.WidgetHandler;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
+import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
+import org.openmrs.util.HandlerUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 /**
  *
@@ -38,7 +46,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PatientSummaryTemplateEditor {
 	
 	@RequestMapping(value = "/newTemplate", method = RequestMethod.GET)
-	public String newTemplate(@RequestParam String reportDefinitionUuid, ModelMap model) {
+	public String newTemplate(String reportDefinitionUuid, ModelMap model) {
 		PatientSummaryReportDefinition reportDefinition = getService().getPatientSummaryReportDefinitionByUuid(
 		    reportDefinitionUuid);
 		
@@ -51,29 +59,54 @@ public class PatientSummaryTemplateEditor {
 		
 		template = getService().savePatientSummaryTemplate(template);
 		
-		model.put("template", template);
+		model.put("templateUuid", template.getUuid());
 		
-		return PatientSummaryWebConstants.MODULE_URL + "templateEditor";
+		return "redirect:" + PatientSummaryWebConstants.MODULE_URL + "templateEditor.form";
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public void editTemplate(@RequestParam String templateUuid, ModelMap model) {
+	public void editTemplate(String templateUuid, ModelMap model) {
 		PatientSummaryTemplate template = getService().getPatientSummaryTemplateByUuid(templateUuid);
 		
 		model.put("template", template);
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public void saveTemplate(@ModelAttribute("template") PatientSummaryTemplate formTemplate, byte[] resource, ModelMap model) {
-		PatientSummaryTemplate template = getService().getPatientSummaryTemplateByUuid(formTemplate.getUuid());
+	public void saveTemplate(String templateUuid, String name, Class<? extends ReportRenderer> rendererType, String properties,
+	                         HttpServletRequest request, ModelMap model) throws IOException {
+		PatientSummaryTemplate template = getService().getPatientSummaryTemplateByUuid(templateUuid);
 		
-		template.getReportDesign().setName(formTemplate.getReportDesign().getName());
-		template.getReportDesign().setRendererType(formTemplate.getReportDesign().getRendererType());
+		template.getReportDesign().setName(name);
+		template.getReportDesign().setRendererType(rendererType);
 		
-		if (resource != null) {
-			ReportDesignResource designResource = new ReportDesignResource();
-			designResource.setContents(resource);
-			template.getReportDesign().addResource(designResource);
+		if (!template.getReportDesign().getRendererType().equals(TextTemplateRenderer.class)) {
+			MultipartHttpServletRequest mpr = (MultipartHttpServletRequest) request;
+	    	Map<String, MultipartFile> files = mpr.getFileMap();
+	    	
+			MultipartFile resource = files.values().iterator().next();
+				
+			if (resource != null && !resource.isEmpty()) {
+				ReportDesignResource designResource = new ReportDesignResource();
+				designResource.setReportDesign(template.getReportDesign());
+				designResource.setContents(resource.getBytes());
+				designResource.setContentType(resource.getContentType());
+				
+				String fileName = resource.getOriginalFilename();
+				int index = fileName.lastIndexOf(".");
+				designResource.setName(fileName.substring(0, index));
+				designResource.setExtension(fileName.substring(index + 1));
+				
+				template.getReportDesign().addResource(designResource);
+			}
+			
+			WidgetHandler propHandler = HandlerUtil.getPreferredHandler(WidgetHandler.class, Properties.class);
+			Properties props = (Properties) propHandler.parse(properties, Properties.class);
+			template.getReportDesign().setProperties(props);
+		} else {
+			template.getReportDesign().getResources().clear();
+			template.getReportDesign().setProperties(null);
+			
+			
 		}
 		
 		getService().savePatientSummaryTemplate(template);
@@ -81,8 +114,8 @@ public class PatientSummaryTemplateEditor {
 		model.put("template", template);
 	}
 	
-	@RequestMapping(value = "/deleteResource", method = RequestMethod.POST)
-	public void deleteResource(@RequestParam String templateUuid, @RequestParam String resourceUuid) {
+	@RequestMapping(value = "/deleteResource", method = RequestMethod.GET)
+	public String deleteResource(String templateUuid, String resourceUuid, ModelMap model) {
 		PatientSummaryTemplate template = getService().getPatientSummaryTemplateByUuid(templateUuid);
 		
 		Set<ReportDesignResource> resources = template.getReportDesign().getResources();
@@ -93,6 +126,12 @@ public class PatientSummaryTemplateEditor {
 				break;
 			}
 		}
+		
+		getService().savePatientSummaryTemplate(template);
+		
+		model.put("templateUuid", template.getUuid());
+		
+		return "redirect:" + PatientSummaryWebConstants.MODULE_URL + "templateEditor.form";
 	}
 	
 	private PatientSummaryService getService() {

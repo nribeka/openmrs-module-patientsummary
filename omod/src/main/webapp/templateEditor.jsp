@@ -20,7 +20,8 @@
 	});
 </script>
 
-<form action="templateEditor.form" method="post">
+<form method="post" enctype="multipart/form-data">
+<input type="hidden" name="templateUuid" value="${template.uuid}" />
 
 <div style="float: left; width: 30%">
 
@@ -50,9 +51,18 @@
 			Template Configuration
 		</div>
 		<div class="box">
-			Template File: <input name="resource" type="file" /><br/><br/>
+			Upload Template File: <input name="resource" type="file" /><br/>
+			<c:if test="${!empty template.reportDesign.resources}">
+				Template Files:
+				<ul>
+				<c:forEach items="${template.reportDesign.resources}" var="resource">
+					<li>${resource.name}.${resource.extension} <input type="button" value="Delete" onclick="window.location='templateEditor/deleteResource.form?templateUuid=${template.uuid}&resourceUuid=${resource.uuid}'"/></li>
+				</c:forEach>
+				</ul>
+			</c:if>
+			<br/>
 			Configuration: <br/>
-			<textarea rows="10" style="width: 99%"></textarea>
+			<wgt:widget id="properties" name="properties" object="${template.reportDesign}" property="properties" attributes="rows=20|cols=50"/>
 		</div>
 	</div>
 	
@@ -64,9 +74,14 @@
 		<div id="edit"></div>
 		<div id="preview"></div>
 	</div>
+	
+	<div style="text-align: right;">
+		<input type="button" value="Cancel" onclick="window.location='../patientSummaryReportDefinitionEditor.form?uuid=${template.reportDesign.reportDefinition.uuid}'"/> <input type="submit" value="Save"/>
+	</div>
 </div>
+
+<div style="clear: both"></div>
 
 </form>
 
-<div style="clear: both"></div>
 <%@ include file="/WEB-INF/template/footer.jsp"%>

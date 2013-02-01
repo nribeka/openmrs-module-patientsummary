@@ -6,12 +6,12 @@
 	$(document).ready(function() {
 		$("#rendererType").change(function() {
 			if ($(this).find("option:selected").attr("value") == "org.openmrs.module.reporting.report.renderer.TextTemplateRenderer") {
-				 $("#templateConfiguration").hide();
-				 $("#textTemplate").show();
-			 } else {
-				 $("#templateConfiguration").show();
-				 $("#textTemplate").hide();
-			 }
+				$("#templateConfiguration").hide();
+				$("#textTemplate").show();
+			} else {
+				$("#templateConfiguration").show();
+				$("#textTemplate").hide();
+			}
 		});
 		
 		$("#rendererType").trigger("change");
@@ -56,7 +56,7 @@
 				Template Files:
 				<ul>
 				<c:forEach items="${template.reportDesign.resources}" var="resource">
-					<li>${resource.name}.${resource.extension} <input type="button" value="Delete" onclick="window.location='templateEditor/deleteResource.form?templateUuid=${template.uuid}&resourceUuid=${resource.uuid}'"/></li>
+					<li>${resource.name} <input type="button" value="Delete" onclick="window.location='templateEditor/deleteResource.form?templateUuid=${template.uuid}&resourceUuid=${resource.uuid}'"/></li>
 				</c:forEach>
 				</ul>
 			</c:if>
@@ -71,12 +71,34 @@
 			<li><a href="#edit">Edit</a></li>
 			<li><a href="#preview">Preview</a></li>
 		</ul>
-		<div id="edit"></div>
-		<div id="preview"></div>
+		<div id="edit">
+			Script Type:
+			<select name="scriptType">
+			<c:forEach var="type" items="${scriptTypes}">
+				<c:choose>
+				<c:when test="${scriptType eq type}">
+					<option selected="selected">${type}</option>
+				</c:when>
+				<c:otherwise>
+					<option>${type}</option>
+				</c:otherwise>
+				</c:choose>
+			</c:forEach>
+			</select>
+			<br/><br/>
+			<textarea name="script" rows="20" cols="2" style="width:99%">${script}</textarea>
+		</div>
+		<div id="preview">
+			Patient to preview: <!-- Need to figure out how to make it work
+			<openmrs_tag:patientField formFieldName="patientId" formFieldId="patientId" />  -->
+			<input type="text" name="patientId" value="${patientId}" />
+			<input type="button" value="Change" /><br /><br />
+			<iframe style="width: 99%; height: 600px"></iframe>
+		</div>
 	</div>
 	
 	<div style="text-align: right;">
-		<input type="button" value="Cancel" onclick="window.location='../patientSummaryReportDefinitionEditor.form?uuid=${template.reportDesign.reportDefinition.uuid}'"/> <input type="submit" value="Save"/>
+		<input type="button" value="Cancel" onclick="window.location='patientSummaryReportDefinitionEditor.form?uuid=${template.reportDesign.reportDefinition.uuid}'"/> <input type="submit" value="Save"/>
 	</div>
 </div>
 

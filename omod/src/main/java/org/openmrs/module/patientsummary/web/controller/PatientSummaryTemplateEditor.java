@@ -14,6 +14,7 @@
 package org.openmrs.module.patientsummary.web.controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -30,6 +31,7 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
+import org.openmrs.module.reporting.report.renderer.template.TemplateEngineManager;
 import org.openmrs.util.HandlerUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -65,15 +67,29 @@ public class PatientSummaryTemplateEditor {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public void editTemplate(String templateUuid, ModelMap model) {
+	public void editTemplate(String templateUuid, ModelMap model) throws UnsupportedEncodingException {
 		PatientSummaryTemplate template = getService().getPatientSummaryTemplateByUuid(templateUuid);
 		
-		model.put("template", template);
+		populateModel(model, template);
 	}
+
+	private void populateModel(ModelMap model, PatientSummaryTemplate template) throws UnsupportedEncodingException {
+	    model.put("template", template);
+	    model.put("scriptType", template.getReportDesign().getPropertyValue(TextTemplateRenderer.TEMPLATE_TYPE, ""));
+		model.put("scriptTypes", TemplateEngineManager.getAvailableTemplateEngineNames());
+		
+		if (template.getReportDesign().getRendererType().equals(TextTemplateRenderer.class)) {
+			ReportDesignResource resource = template.getReportDesign().getResourceByName("template");
+			if (resource != null) {
+				model.put("script", new String(resource.getContents(), "UTF-8"));
+			}
+		}
+    }
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public void saveTemplate(String templateUuid, String name, Class<? extends ReportRenderer> rendererType, String properties,
-	                         HttpServletRequest request, ModelMap model) throws IOException {
+	public void saveTemplate(String templateUuid, String name, Class<? extends ReportRenderer> rendererType,
+	                         String properties, String script, String scriptType, HttpServletRequest request, ModelMap model)
+	    throws IOException {
 		PatientSummaryTemplate template = getService().getPatientSummaryTemplateByUuid(templateUuid);
 		
 		template.getReportDesign().setName(name);
@@ -81,10 +97,10 @@ public class PatientSummaryTemplateEditor {
 		
 		if (!template.getReportDesign().getRendererType().equals(TextTemplateRenderer.class)) {
 			MultipartHttpServletRequest mpr = (MultipartHttpServletRequest) request;
-	    	Map<String, MultipartFile> files = mpr.getFileMap();
-	    	
+			Map<String, MultipartFile> files = mpr.getFileMap();
+			
 			MultipartFile resource = files.values().iterator().next();
-				
+			
 			if (resource != null && !resource.isEmpty()) {
 				ReportDesignResource designResource = new ReportDesignResource();
 				designResource.setReportDesign(template.getReportDesign());
@@ -103,15 +119,24 @@ public class PatientSummaryTemplateEditor {
 			Properties props = (Properties) propHandler.parse(properties, Properties.class);
 			template.getReportDesign().setProperties(props);
 		} else {
+			template.getReportDesign().getProperties().clear();
 			template.getReportDesign().getResources().clear();
-			template.getReportDesign().setProperties(null);
 			
+			ReportDesignResource designResource = new ReportDesignResource();
+			designResource.setReportDesign(template.getReportDesign());
+			designResource.setName("template");
+			designResource.setContents(script.getBytes("UTF-8"));
 			
+			template.getReportDesign().addResource(designResource);
+			
+			template.getReportDesign().addPropertyValue(TextTemplateRenderer.TEMPLATE_TYPE, scriptType);
 		}
 		
 		getService().savePatientSummaryTemplate(template);
 		
-		model.put("template", template);
+		populateModel(model, template);
+		
+		
 	}
 	
 	@RequestMapping(value = "/deleteResource", method = RequestMethod.GET)

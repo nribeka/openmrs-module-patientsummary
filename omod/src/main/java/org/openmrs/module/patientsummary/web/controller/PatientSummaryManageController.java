@@ -119,7 +119,8 @@ public class PatientSummaryManageController {
 		if (summaryToPreview != null && patientId != null) {
 			PatientSummaryTemplate ps = pss.getPatientSummaryTemplate(summaryId);
 			PatientSummaryResult result = pss.evaluatePatientSummaryTemplate(ps, patientId, new HashMap<String, Object>());
-			model.addAttribute("generatedSummary", new String(result.getRawContents(), "UTF-8"));
+			String generatedSummary = (result.getRawContents() != null ? new String(result.getRawContents(), "UTF-8") : "");
+			model.addAttribute("generatedSummary", generatedSummary);
 			errorDetails = ObjectUtils.toString(result.getErrorDetails());
 		}
 		

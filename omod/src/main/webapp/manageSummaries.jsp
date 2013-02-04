@@ -48,7 +48,7 @@
 								</td>
 								<td width="20%">
 									<c:forEach items="${summary.templates}" var="template" varStatus="templateStatus">
-										<a href="${pageContext.request.contextPath}/module/reporting/viewPortlet.htm?id=reportDesignPortlet&url=reportDesignForm&parameters=reportDesignUuid=${template.uuid}">${template.name}</a> <br/>
+										<a href="${pageContext.request.contextPath}/module/patientsummary/templateEditor.form?templateUuid=${template.uuid}">${template.name}</a> <br/>
 									</c:forEach>
 								</td>
 								<td width="40%" nowrap>

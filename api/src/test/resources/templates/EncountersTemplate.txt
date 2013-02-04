@@ -1,0 +1,3 @@
+First Scheduled Visit occurred
+on ${util.format(data.firstScheduledVisit.encounterDatetime, "dd/MMM/yyyy")}
+at $data.firstScheduledVisit.location.name

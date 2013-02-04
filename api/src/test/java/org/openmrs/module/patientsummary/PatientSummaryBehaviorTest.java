@@ -15,10 +15,14 @@ package org.openmrs.module.patientsummary;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.EncounterType;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
+import org.openmrs.module.reporting.common.TimeQualifier;
+import org.openmrs.module.reporting.data.patient.definition.EncountersForPatientDataDefinition;
 import org.openmrs.module.reporting.data.person.definition.*;
 import org.openmrs.module.reporting.dataset.definition.PatientDataSetDefinition;
 import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
@@ -48,5 +52,24 @@ public class PatientSummaryBehaviorTest extends BaseModuleContextSensitiveTest {
 		rd = pss.savePatientSummaryReportDefinition(rd);
 
 		PatientSummaryTestUtil.testGroovyTemplate(rd, 7, "Demographics");
+	}
+
+	@Test
+	public void shouldSupportEncounterData() throws Exception {
+		PatientSummaryService pss = Context.getService(PatientSummaryService.class);
+
+		PatientSummaryReportDefinition rd = new PatientSummaryReportDefinition();
+		rd.setName("Test Patient Summary");
+		PatientDataSetDefinition dsd = rd.getPatientDataSetDefinition();
+
+		EncountersForPatientDataDefinition firstScheduledVisit = new EncountersForPatientDataDefinition();
+		firstScheduledVisit.setWhich(TimeQualifier.FIRST);
+		firstScheduledVisit.addType(Context.getEncounterService().getEncounterType("Scheduled"));
+
+		dsd.addColumn("firstScheduledVisit", firstScheduledVisit, "");
+
+		rd = pss.savePatientSummaryReportDefinition(rd);
+
+		PatientSummaryTestUtil.testGroovyTemplate(rd, 7, "Encounters");
 	}
 }

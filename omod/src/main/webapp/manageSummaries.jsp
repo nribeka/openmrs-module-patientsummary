@@ -44,11 +44,11 @@
 					<c:forEach items="${summaries}" var="summary" varStatus="summaryStatus">
 							<tr>
 								<td width="20%" nowrap>
-									<a href="${pageContext.request.contextPath}/module/patientsummary/patientSummaryReportDefinitionEditor.form?uuid=${summary.uuid}">${summary.name}</a>
+									<a href="${pageContext.request.contextPath}/module/patientsummary/editSummary.form?uuid=${summary.uuid}">${summary.name}</a>
 								</td>
 								<td width="20%">
 									<c:forEach items="${summary.templates}" var="template" varStatus="templateStatus">
-										<a href="${pageContext.request.contextPath}/module/patientsummary/templateEditor.form?templateUuid=${template.uuid}">${template.name}</a> <br/>
+										<a href="${pageContext.request.contextPath}/module/patientsummary/editTemplate.form?templateUuid=${template.uuid}">${template.name}</a> <br/>
 									</c:forEach>
 								</td>
 								<td width="40%" nowrap>
@@ -62,7 +62,9 @@
 	
 	</div>
 	
-	<input type="button" value="Define a new Patient Summary" onclick="window.location='patientSummaryReportDefinitionEditor.form'"/>
+	<div>
+		<input type="button" value="Define a new Patient Summary" onclick="window.location='editSummary.form'"/>
+	</div>
 </div>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

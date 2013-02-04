@@ -46,7 +46,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
  *
  */
 @Controller
-@RequestMapping(PatientSummaryWebConstants.MODULE_URL + "templateEditor")
+@RequestMapping(PatientSummaryWebConstants.MODULE_URL + "editTemplate")
 public class PatientSummaryTemplateEditor {
 	
 	@RequestMapping(value = "/newTemplate", method = RequestMethod.GET)
@@ -65,7 +65,7 @@ public class PatientSummaryTemplateEditor {
 		
 		model.put("templateUuid", template.getUuid());
 		
-		return "redirect:" + PatientSummaryWebConstants.MODULE_URL + "templateEditor.form";
+		return "redirect:" + PatientSummaryWebConstants.MODULE_URL + "editTemplate.form";
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
@@ -164,7 +164,7 @@ public class PatientSummaryTemplateEditor {
 		
 		model.put("templateUuid", template.getUuid());
 		
-		return "redirect:" + PatientSummaryWebConstants.MODULE_URL + "templateEditor.form";
+		return "redirect:" + PatientSummaryWebConstants.MODULE_URL + "editTemplate.form";
 	}
 	
 	private PatientSummaryService getService() {

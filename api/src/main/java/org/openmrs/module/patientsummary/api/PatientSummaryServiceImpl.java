@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +31,6 @@ import org.openmrs.module.patientsummary.PatientSummaryResult;
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.reporting.dataset.definition.PatientDataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.service.DataSetDefinitionService;
-import org.openmrs.module.reporting.definition.service.DefinitionService;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.report.ReportData;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -200,12 +200,14 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
     @Override
     @Transactional
     public PatientSummaryReportDefinition savePatientSummaryReportDefinition(PatientSummaryReportDefinition rd) {
-    	PatientDataSetDefinition patientDataSetDefinition = rd.getPatientDataSetDefinition();
-    	if (StringUtils.isBlank(patientDataSetDefinition.getName())) {
-    		patientDataSetDefinition.setName("Patient Dataset for " + rd.getName());
-    	}
-    	
-    	Context.getService(DataSetDefinitionService.class).saveDefinition(patientDataSetDefinition);
+    	PatientDataSetDefinition dataSetDefinition = rd.getPatientDataSetDefinition();
+		if (StringUtils.isBlank(dataSetDefinition.getName())) {
+			dataSetDefinition.setUuid(UUID.randomUUID().toString());
+			dataSetDefinition.setName("Patient Dataset for " + rd.getName());
+			
+			//DataSet needs to be saved first.
+			Context.getService(DataSetDefinitionService.class).saveDefinition(dataSetDefinition);
+		}
     	
     	return getReportDefinitionService().saveDefinition(rd);
     }

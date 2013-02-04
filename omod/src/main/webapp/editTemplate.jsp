@@ -57,7 +57,7 @@
 				Template Files:
 				<ul>
 				<c:forEach items="${template.reportDesign.resources}" var="resource">
-					<li>${resource.name} <input type="button" value="Delete" onclick="window.location='templateEditor/deleteResource.form?templateUuid=${template.uuid}&resourceUuid=${resource.uuid}'"/></li>
+					<li>${resource.name} <input type="button" value="Delete" onclick="window.location='editTemplate/deleteResource.form?templateUuid=${template.uuid}&resourceUuid=${resource.uuid}'"/></li>
 				</c:forEach>
 				</ul>
 			</c:if>
@@ -99,7 +99,7 @@
 	</div>
 	
 	<div style="text-align: right;">
-		<input type="button" value="Cancel" onclick="window.location='patientSummaryReportDefinitionEditor.form?uuid=${template.reportDesign.reportDefinition.uuid}'"/> <input type="submit" value="Save"/>
+		<input type="button" value="Cancel" onclick="window.location='editSummary.form?uuid=${template.reportDesign.reportDefinition.uuid}'"/> <input type="submit" value="Save"/>
 	</div>
 </div>
 

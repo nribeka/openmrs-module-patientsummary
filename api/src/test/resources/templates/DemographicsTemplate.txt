@@ -1,0 +1,6 @@
+Full Name: $data.patientName
+Family Name, Given Name: $data.patientName.familyName, $data.patientName.givenName
+Age: $data.age years old
+Birthdate formatted:  <%= util.format(data.birthdate, "dd/MMM/yyyy") %>
+Gender translated:  <%= msg.translate(data.gender == "M" ? "Male" : "Female") %>
+City / Village:  $data.address.cityVillage

@@ -1,0 +1,2 @@
+First weight: 50.0 (01/Aug/2008)
+Last weight:  61.0 (19/Aug/2008)

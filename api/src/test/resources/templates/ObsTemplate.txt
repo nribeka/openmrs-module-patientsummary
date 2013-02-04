@@ -1,0 +1,2 @@
+First weight: $data.firstWeight.valueNumeric (${util.format(data.firstWeight.obsDatetime, "dd/MMM/yyyy")})
+Last weight:  $data.lastWeight.valueNumeric (${util.format(data.lastWeight.obsDatetime, "dd/MMM/yyyy")})

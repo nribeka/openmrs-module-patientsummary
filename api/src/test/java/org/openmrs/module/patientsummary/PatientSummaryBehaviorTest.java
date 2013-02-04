@@ -15,6 +15,7 @@ package org.openmrs.module.patientsummary;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
@@ -71,5 +72,30 @@ public class PatientSummaryBehaviorTest extends BaseModuleContextSensitiveTest {
 		rd = pss.savePatientSummaryReportDefinition(rd);
 
 		PatientSummaryTestUtil.testGroovyTemplate(rd, 7, "Encounters");
+	}
+
+	@Test
+	public void shouldSupportObsData() throws Exception {
+		PatientSummaryService pss = Context.getService(PatientSummaryService.class);
+
+		PatientSummaryReportDefinition rd = new PatientSummaryReportDefinition();
+		rd.setName("Test Patient Summary");
+		PatientDataSetDefinition dsd = rd.getPatientDataSetDefinition();
+
+		Concept weight = Context.getConceptService().getConcept("WEIGHT (KG)");
+
+		ObsForPersonDataDefinition firstWeight = new ObsForPersonDataDefinition();
+		firstWeight.setWhich(TimeQualifier.FIRST);
+		firstWeight.setQuestion(weight);
+		dsd.addColumn("firstWeight", firstWeight, "");
+
+		ObsForPersonDataDefinition lastWeight = new ObsForPersonDataDefinition();
+		lastWeight.setWhich(TimeQualifier.LAST);
+		lastWeight.setQuestion(weight);
+		dsd.addColumn("lastWeight", lastWeight, "");
+
+		rd = pss.savePatientSummaryReportDefinition(rd);
+
+		PatientSummaryTestUtil.testGroovyTemplate(rd, 7, "Obs");
 	}
 }

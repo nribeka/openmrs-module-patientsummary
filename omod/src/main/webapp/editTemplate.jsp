@@ -2,6 +2,12 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="template/localHeader.jsp"%>
 
+<style type="text/css">
+.tab {
+	background-color: #DEDEDE;
+}
+</style>
+
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#rendererType").change(function() {
@@ -16,12 +22,39 @@
 		
 		$("#rendererType").trigger("change");
 		
-		$("#textTemplate").tabs();
+		$("#previewLink").click(function() {
+			$("#edit").hide();
+			$("#preview").show();
+			
+			$("#previewLink").addClass("tab");
+			$("#editLink").removeClass("tab");
+			
+			var form = $("#templateForm");
+			form.attr("target", "previewFrame");
+			form.attr("action", '<c:url value="/module/patientsummary/previewSummaries.form" />')
+			
+			form.submit();
+			
+			form.attr("target", "");
+			form.attr("action", "");
+		});
+		
+		$("#editLink").click(function() {
+			$("#edit").show();
+			$("#preview").hide();
+			
+			$("#editLink").addClass("tab");
+			$("#previewLink").removeClass("tab");
+		});
+		
+		$("#editLink").trigger("click");
 	});
 </script>
 
-<form method="post" enctype="multipart/form-data">
+<form id="templateForm" method="post" enctype="multipart/form-data">
 <input type="hidden" name="templateUuid" value="${template.uuid}" />
+<input type="hidden" name="summaryId" value="${template.id}" />
+<input type="hidden" name="iframe" value="true" />
 
 <div style="float: left; width: 30%">
 
@@ -42,7 +75,12 @@
 		Schema Data
 	</div>
 	<div class="box">
-		
+		<table style="width:100%" class="reporting-data-table display">
+			<tr><th>Name</th><th>Type</th></tr>
+			<c:forEach items="${template.reportDesign.reportDefinition.dataSchema}" var="item">
+			<tr><td>${item.key}</td><td>${item.value}</td></tr>
+			</c:forEach>
+		</table>
 	</div>
 </div>
 
@@ -68,33 +106,32 @@
 	</div>
 	
 	<div id="textTemplate">
-		<ul>
-			<li><a href="#edit">Edit</a></li>
-			<li><a href="#preview">Preview</a></li>
-		</ul>
-		<div id="edit">
-			Script Type:
-			<select name="scriptType">
-			<c:forEach var="type" items="${scriptTypes}">
-				<c:choose>
-				<c:when test="${scriptType eq type}">
-					<option selected="selected">${type}</option>
-				</c:when>
-				<c:otherwise>
-					<option>${type}</option>
-				</c:otherwise>
-				</c:choose>
-			</c:forEach>
-			</select>
-			<br/><br/>
-			<textarea name="script" rows="20" cols="2" style="width:99%">${script}</textarea>
+		<div class="boxHeader">
+			Template Editor
 		</div>
-		<div id="preview">
-			Patient to preview: <!-- Need to figure out how to make it work
-			<openmrs_tag:patientField formFieldName="patientId" formFieldId="patientId" />  -->
-			<input type="text" name="patientId" value="${patientId}" />
-			<input type="button" value="Change" /><br /><br />
-			<iframe style="width: 99%; height: 600px"></iframe>
+		<div class="box">
+			<a id="editLink" href="#edit">&nbsp;EDIT&nbsp;</a> <a id="previewLink" href="#preview">&nbsp;PREVIEW&nbsp;</a>
+			
+			<div id="edit">
+				Script Type:
+				<select name="scriptType">
+				<c:forEach var="type" items="${scriptTypes}">
+					<c:choose>
+					<c:when test="${scriptType eq type}">
+						<option selected="selected">${type}</option>
+					</c:when>
+					<c:otherwise>
+						<option>${type}</option>
+					</c:otherwise>
+					</c:choose>
+				</c:forEach>
+				</select>
+				<br/><br/>
+				<textarea name="script" rows="20" cols="2" style="width:99%">${script}</textarea>
+			</div>
+			<div id="preview">
+				<iframe id="previewFrame" style="width: 99%; height: 600px"></iframe>
+			</div>
 		</div>
 	</div>
 	

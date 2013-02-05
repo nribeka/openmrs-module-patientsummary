@@ -92,7 +92,7 @@ public class PatientSummaryTemplateEditor {
     }
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public void saveTemplate(String templateUuid, String name, Class<? extends ReportRenderer> rendererType,
+	public String saveTemplate(String templateUuid, String name, Class<? extends ReportRenderer> rendererType,
 	                         String properties, String script, String scriptType, boolean enableOnPatientDashboard, HttpServletRequest request, ModelMap model)
 	    throws IOException {
 		
@@ -142,9 +142,9 @@ public class PatientSummaryTemplateEditor {
 		
 		getService().savePatientSummaryTemplate(template);
 		
-		populateModel(model, template);
+		model.put("uuid", template.getReportDefinition().getUuid());
 		
-		
+		return "redirect:" + PatientSummaryWebConstants.MODULE_URL + "editSummary.form";
 	}
 	
 	@RequestMapping(value = "/deleteResource", method = RequestMethod.GET)

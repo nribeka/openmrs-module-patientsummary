@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
@@ -30,6 +31,8 @@ import org.openmrs.module.patientsummary.PatientSummaryResult;
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
 import org.openmrs.module.patientsummary.util.ConfigurationUtil;
+import org.openmrs.module.reporting.report.ReportDesignResource;
+import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -104,26 +107,54 @@ public class PatientSummaryManageController {
 	}
 	
 	@RequestMapping(value = "/module/" + ConfigurationUtil.MODULE_ID + "/previewSummaries")
-	public void previewSummaries(ModelMap model,
-					   @RequestParam(required=false, value="summaryId") Integer summaryId,
-					   @RequestParam(required=false, value="patientId") Integer patientId) throws Exception {
-		
+	public void previewSummaries(ModelMap model, @RequestParam(required = false, value = "summaryId") Integer summaryId,
+	                             @RequestParam(required = false, value = "patientId") Integer patientId,
+	                             @RequestParam(required = false) String script,
+	                             @RequestParam(required = false) String scriptType,
+	                             @RequestParam(required = false) String iframe, HttpSession session) throws Exception {
 		PatientSummaryService pss = Context.getService(PatientSummaryService.class);
-		List<PatientSummaryTemplate> patientSummaries = pss.getAllPatientSummaryTemplates(false);
-		PatientSummaryTemplate summaryToPreview = (summaryId == null ? null :  pss.getPatientSummaryTemplate(summaryId));
 
-		model.addAttribute("patientSummaries", patientSummaries);
+		if (patientId == null) {
+			//Get patientId from session to avoid picking it all the time when returning to preview.
+			patientId = (Integer) session.getAttribute("patientId");
+		} else {
+			session.setAttribute("patientId", patientId);
+		}
+		
+		if (script == null) {
+			//Don't display patient summary templates if previewing an unsaved script template.
+			List<PatientSummaryTemplate> patientSummaries = pss.getAllPatientSummaryTemplates(false);
+			model.addAttribute("patientSummaries", patientSummaries);
+		}
+		
+		PatientSummaryTemplate summaryToPreview = (summaryId == null ? null :  pss.getPatientSummaryTemplate(summaryId));
 		model.addAttribute("summaryToPreview", summaryToPreview);
 		model.addAttribute("patientId", patientId);
+		model.addAttribute("iframe", iframe);
+		model.addAttribute("script", script);
+		model.addAttribute("scriptType", scriptType);
 		
 		String errorDetails = null;
 		
-		if (summaryToPreview != null && patientId == null) {
-			errorDetails = "Please select a patient to preview a Patient Summary";
-		}
-		
 		if (summaryToPreview != null && patientId != null) {
 			PatientSummaryTemplate ps = pss.getPatientSummaryTemplate(summaryId);
+			
+			if (script != null) {
+				//Preview an unsaved script template
+				ps.getReportDesign().setRendererType(TextTemplateRenderer.class);
+				ps.getReportDesign().getProperties().clear();
+				ps.getReportDesign().getResources().clear();
+				
+				ReportDesignResource designResource = new ReportDesignResource();
+				designResource.setReportDesign(ps.getReportDesign());
+				designResource.setName("template");
+				designResource.setContents(script.getBytes("UTF-8"));
+				
+				ps.getReportDesign().addResource(designResource);
+				
+				ps.getReportDesign().addPropertyValue(TextTemplateRenderer.TEMPLATE_TYPE, scriptType);
+			}
+			
 			PatientSummaryResult result = pss.evaluatePatientSummaryTemplate(ps, patientId, new HashMap<String, Object>());
 			String generatedSummary = (result.getRawContents() != null ? new String(result.getRawContents(), "UTF-8") : "");
 			model.addAttribute("generatedSummary", generatedSummary);

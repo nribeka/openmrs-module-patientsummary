@@ -14,9 +14,13 @@
 	<tr>
 		<td style="white-space:nowrap; vertical-align:top; padding-right:10px;">
 			<form>
-				<input type="hidden" name="iframe" value="${iframe}"/>
-				<input type="hidden" name="script" value="${script}"/>
-				<input type="hidden" name="scriptType" value="${scriptType}"/>
+				<c:if test="${!empty iframe}">
+					<input type="hidden" name="iframe" value="${iframe}"/>
+				</c:if>
+				<c:if test="${!empty script}">
+					<input type="hidden" name="script" value="${script}"/>
+					<input type="hidden" name="scriptType" value="${scriptType}"/>
+				</c:if>
 				
 				<b>Choose Patient:</b><br/>
 				<openmrs_tag:patientField formFieldName="patientId" initialValue="${patientId}" /><br/>

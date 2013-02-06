@@ -1,0 +1,8 @@
+<ol>
+	<% 
+	activeItems = util.sort(data.obs.activeItems, "obsDatetime desc")
+	
+	for(item in activeItems) { %>
+		<li>$item.valueCoded.name <small><i>${util.format(item.obsDatetime, "dd-MMM-yyyy")}</i></small></li>
+	<% } %>
+</ol>

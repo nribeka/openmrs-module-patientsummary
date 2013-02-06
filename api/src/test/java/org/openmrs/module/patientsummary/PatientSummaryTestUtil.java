@@ -13,25 +13,20 @@
  */
 package org.openmrs.module.patientsummary;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.patientsummary.api.PatientSummaryService;
-import org.openmrs.module.reporting.data.person.definition.*;
-import org.openmrs.module.reporting.dataset.definition.PatientDataSetDefinition;
-import org.openmrs.module.reporting.report.ReportData;
-import org.openmrs.module.reporting.report.ReportDesign;
-import org.openmrs.module.reporting.report.ReportDesignResource;
-import org.openmrs.module.reporting.report.definition.service.ReportDefinitionService;
-import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
-import org.openmrs.module.reporting.report.service.ReportService;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
-import org.openmrs.util.OpenmrsClassLoader;
-
 import java.io.InputStream;
 import java.util.HashMap;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.patientsummary.api.PatientSummaryService;
+import org.openmrs.module.reporting.report.ReportDesign;
+import org.openmrs.module.reporting.report.ReportDesignResource;
+import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
+import org.openmrs.module.reporting.report.service.ReportService;
+import org.openmrs.util.OpenmrsClassLoader;
 
 /**
  * Tests {@link {PatientSummaryService}}.
@@ -51,15 +46,16 @@ public class PatientSummaryTestUtil {
 		PatientSummaryService pss = Context.getService(PatientSummaryService.class);
 		PatientSummaryResult result = pss.evaluatePatientSummaryTemplate(template, patientId, new HashMap<String, Object>());
 
-		Assert.assertEquals(expectedResults, new String(result.getRawContents()));
 		Assert.assertNull(result.getErrorDetails());
+		String actualResult = new String(result.getRawContents(), "UTF-8");
+		Assert.assertEquals(StringUtils.deleteWhitespace(expectedResults), StringUtils.deleteWhitespace(actualResult));
 	}
 
 	/**
 	 * Utility method to retrieve a text-based resource as a String
 	 */
 	public static String getResourceAsString(String resource) throws Exception {
-		InputStream is = null;
+		InputStream is = null;	
 		try {
 			is = OpenmrsClassLoader.getInstance().getResourceAsStream(resource);
 			return IOUtils.toString(is, "UTF-8");

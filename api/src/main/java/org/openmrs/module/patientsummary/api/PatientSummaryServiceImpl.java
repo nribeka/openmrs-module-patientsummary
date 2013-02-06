@@ -201,13 +201,14 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
     @Transactional
     public PatientSummaryReportDefinition savePatientSummaryReportDefinition(PatientSummaryReportDefinition rd) {
     	PatientDataSetDefinition dataSetDefinition = rd.getPatientDataSetDefinition();
-		if (StringUtils.isBlank(dataSetDefinition.getName())) {
+    	dataSetDefinition.setName("Patient Dataset for " + rd.getName());
+    	
+		if (StringUtils.isBlank(dataSetDefinition.getUuid())) {
 			dataSetDefinition.setUuid(UUID.randomUUID().toString());
-			dataSetDefinition.setName("Patient Dataset for " + rd.getName());
-			
-			//DataSet needs to be saved first.
-			Context.getService(DataSetDefinitionService.class).saveDefinition(dataSetDefinition);
 		}
+		
+		//DataSet needs to be saved first.
+		Context.getService(DataSetDefinitionService.class).saveDefinition(dataSetDefinition);
     	
     	return getReportDefinitionService().saveDefinition(rd);
     }

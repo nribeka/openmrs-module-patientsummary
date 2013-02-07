@@ -54,7 +54,20 @@
 			<tr><td><spring:message code="patientsummary.name" />:</td><td><input name="name" value="${template.reportDesign.name}"/></td></tr>
 			<tr>
 				<td><spring:message code="patientsummary.type" />:</td>
-				<td><wgt:widget id="rendererType" name="rendererType" object="${template.reportDesign}" property="rendererType" attributes="type=org.openmrs.module.reporting.report.renderer.ReportRenderer|simple=true"/></td>
+				<td>
+				<select id="rendererType" name="rendererType">
+				<c:forEach items="${rendererTypes}" var="rendererType">
+					<c:choose>
+					<c:when test="${rendererType eq template.reportDesign.rendererType}">
+						<option selected="selected" value="${rendererType.name}"><rpt:displayLabel type="${rendererType.name}"/></option>
+					</c:when>
+					<c:otherwise>
+						<option value="${rendererType.name}"><rpt:displayLabel type="${rendererType.name}"/></option>
+					</c:otherwise>
+					</c:choose>
+				</c:forEach>
+				</select>
+				</td>
 			</tr>
 		</table>
 		<br/><input type="checkbox" name="enableOnPatientDashboard" <c:if test="${enableOnPatientDashboard}">checked</c:if> ><spring:message code="patientsummary.enableOnPatientDashboard"/>
@@ -115,7 +128,7 @@
 				</c:otherwise>
 				</c:choose>
 			</c:forEach>
-			</select>
+			
 			<br/><br/>
 			<textarea name="script" rows="20" cols="2" style="width:99%">${script}</textarea>
 		</div>

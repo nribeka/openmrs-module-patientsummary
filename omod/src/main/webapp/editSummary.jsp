@@ -65,7 +65,7 @@
 									<c:forEach items="${templates}" var="template" varStatus="designStatus">
 										<tr>
 											<td nowrap><a href="#" id="${template.uuid}TemplateEditLink">${template.name}</a></td>
-											<td width="100%">${template.reportDesign.rendererType.simpleName}</td>
+											<td width="100%"><rpt:displayLabel type="${template.reportDesign.rendererType.name}"/></td>
 											<td nowrap align="center"><a href="#" id="${template.uuid}TemplateRemoveLink">[X]</a></td>
 										</tr>
 									</c:forEach>

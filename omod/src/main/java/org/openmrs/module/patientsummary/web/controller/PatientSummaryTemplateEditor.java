@@ -15,7 +15,10 @@ package org.openmrs.module.patientsummary.web.controller;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -33,6 +36,7 @@ import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
 import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
 import org.openmrs.module.reporting.report.renderer.template.TemplateEngineManager;
+import org.openmrs.module.reporting.report.service.ReportService;
 import org.openmrs.util.HandlerUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -81,6 +85,13 @@ public class PatientSummaryTemplateEditor {
 		model.put("scriptTypes", TemplateEngineManager.getAvailableTemplateEngineNames());
 		
 		model.put("enableOnPatientDashboard", PatientSummaryWebConfiguration.enableOnPatientDashboard(template));
+		
+		Collection<ReportRenderer> renderers = Context.getService(ReportService.class).getReportRenderers();
+	    List<Class<? extends ReportRenderer>> rendererTypes = new ArrayList<Class<? extends ReportRenderer>>();
+	    for (ReportRenderer renderer : renderers) {
+	        rendererTypes.add(renderer.getClass());
+        }
+	    model.put("rendererTypes", rendererTypes);
 		
 		if (template.getReportDesign().getRendererType().equals(TextTemplateRenderer.class)) {
 			ReportDesignResource resource = template.getReportDesign().getResourceByName("template");

@@ -64,7 +64,7 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 	}
 	
 	/**
-	 * @see PatientSummaryService#getAllPatientSummaryDefinitions(boolean)
+	 * @see PatientSummaryService#getAllPatientSummaryReportDefinitions(boolean)
 	 */
 	@Override
 	public List<PatientSummaryReportDefinition> getAllPatientSummaryReportDefinitions(boolean includeRetired) {
@@ -87,7 +87,7 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
     }
     
 	/**
-	 * @see PatientSummaryService#getPatientSummaryTemplates(ReportDefinition, boolean)
+	 * @see PatientSummaryService#getPatientSummaryTemplates(PatientSummaryReportDefinition, boolean)
 	 */
 	@Override
 	public List<PatientSummaryTemplate> getPatientSummaryTemplates(PatientSummaryReportDefinition reportDefinition, boolean includeRetired) {
@@ -104,7 +104,10 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 	@Override
 	public PatientSummaryTemplate getPatientSummaryTemplate(Integer id) {
 		ReportDesign d = getReportService().getReportDesign(id);
-		return new PatientSummaryTemplate(d);
+		if (d != null) {
+			return new PatientSummaryTemplate(d);
+		}
+		return null;
 	}
 
 	/**
@@ -113,7 +116,10 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 	@Override
 	public PatientSummaryTemplate getPatientSummaryTemplateByUuid(String uuid) {
 		ReportDesign d = getReportService().getReportDesignByUuid(uuid);
-		return new PatientSummaryTemplate(d);
+		if (d != null) {
+			return new PatientSummaryTemplate(d);
+		}
+		return null;
 	}
 
 	/**

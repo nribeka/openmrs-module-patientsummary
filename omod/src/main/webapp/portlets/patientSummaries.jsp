@@ -18,6 +18,7 @@
 	});
 	
 	function loadPatientSummary(summaryAndContentType) {
+		console.log("Trying to load " + summaryAndContentType);
 		var split = summaryAndContentType.split("_");
 		var summaryId = split[0];
 		var contentType = split[1];

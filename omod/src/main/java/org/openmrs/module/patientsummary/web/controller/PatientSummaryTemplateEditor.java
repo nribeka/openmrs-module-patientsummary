@@ -84,7 +84,7 @@ public class PatientSummaryTemplateEditor {
 	    model.put("scriptType", template.getReportDesign().getPropertyValue(TextTemplateRenderer.TEMPLATE_TYPE, ""));
 		model.put("scriptTypes", TemplateEngineManager.getAvailableTemplateEngineNames());
 		
-		model.put("enableOnPatientDashboard", PatientSummaryWebConfiguration.enableOnPatientDashboard(template));
+		model.put("enableOnPatientDashboard", PatientSummaryWebConfiguration.isEnabledOnPatientDashboard(template));
 		
 		Collection<ReportRenderer> renderers = Context.getService(ReportService.class).getReportRenderers();
 	    List<Class<? extends ReportRenderer>> rendererTypes = new ArrayList<Class<? extends ReportRenderer>>();
@@ -143,6 +143,7 @@ public class PatientSummaryTemplateEditor {
 			ReportDesignResource designResource = new ReportDesignResource();
 			designResource.setReportDesign(template.getReportDesign());
 			designResource.setName("template");
+			designResource.setContentType("text/html");
 			designResource.setContents(script.getBytes("UTF-8"));
 			
 			template.getReportDesign().addResource(designResource);

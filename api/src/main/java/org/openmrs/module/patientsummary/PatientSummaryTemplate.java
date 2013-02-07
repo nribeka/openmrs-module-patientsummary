@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.patientsummary;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -51,12 +52,15 @@ public class PatientSummaryTemplate {
 	public String getContentType() {
 		try {
 			ReportRenderer rr = reportDesign.getRendererType().newInstance();
-			return rr.getRenderedContentType(reportDesign.getReportDefinition(), reportDesign.getUuid());
+			String contentType = rr.getRenderedContentType(reportDesign.getReportDefinition(), reportDesign.getUuid());
+			if (StringUtils.isNotEmpty(contentType)) {
+				return contentType;
+			}
 		}
 		catch (Exception e) {
 			log.warn("Unable to retrieve content type for patient summary: " + reportDesign);
 		}
-		return "text/plain";
+		return "text/html";
 	}
 	
 	/**

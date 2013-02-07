@@ -30,7 +30,6 @@ import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
 import org.openmrs.module.patientsummary.PatientSummaryResult;
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
-import org.openmrs.module.patientsummary.util.ConfigurationUtil;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.renderer.TextTemplateRenderer;
 import org.springframework.stereotype.Controller;
@@ -46,7 +45,7 @@ public class PatientSummaryManageController {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	@RequestMapping(value = "/module/" + ConfigurationUtil.MODULE_ID + "/manageSummaries")
+	@RequestMapping(value = PatientSummaryWebConstants.MODULE_URL + "/manageSummaries")
 	public void manageSummaries(ModelMap model, @RequestParam(required=false, value="includeRetired") boolean includeRetired) {
 		
 		List<PatientSummary> patientSummaries = new ArrayList<PatientSummary>();
@@ -64,7 +63,7 @@ public class PatientSummaryManageController {
 	/**
 	 * Deletes a patient summary report definition and all associated patient summary designs
 	 */
-	@RequestMapping("/module/" + ConfigurationUtil.MODULE_ID + "/purgeSummary")
+	@RequestMapping(value = PatientSummaryWebConstants.MODULE_URL + "/purgeSummary")
 	public String purgeSummary(@RequestParam("uuid") String uuid) {
 		PatientSummaryTemplate patientSummary = getService().getPatientSummaryTemplateByUuid(uuid);
 		PatientSummaryReportDefinition reportDefinition = patientSummary.getReportDefinition();
@@ -80,7 +79,7 @@ public class PatientSummaryManageController {
 	 * @param patientId the id of patient whose summary you wish to view
 	 * @param summaryId the id of the patientsummary you wish to view
 	 */
-	@RequestMapping("/module/" + ConfigurationUtil.MODULE_ID + "/renderSummary")
+	@RequestMapping(value = PatientSummaryWebConstants.MODULE_URL + "/renderSummary")
 	public void renderSummary(ModelMap model, HttpServletRequest request, HttpServletResponse response,
 							  @RequestParam("patientId") Integer patientId,                       
 							  @RequestParam("summaryId") Integer summaryId,
@@ -114,7 +113,7 @@ public class PatientSummaryManageController {
 		}
 	}
 	
-	@RequestMapping(value = "/module/" + ConfigurationUtil.MODULE_ID + "/previewSummaries")
+	@RequestMapping(value = PatientSummaryWebConstants.MODULE_URL + "/previewSummaries")
 	public void previewSummaries(ModelMap model, @RequestParam(required = false, value = "summaryId") Integer summaryId,
 	                             @RequestParam(required = false, value = "patientId") Integer patientId,
 	                             @RequestParam(required = false) String script,

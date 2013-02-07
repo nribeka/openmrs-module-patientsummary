@@ -13,8 +13,8 @@
  */
 package org.openmrs.module.patientsummary.extension.html;
 
-import org.openmrs.module.patientsummary.util.ConfigurationUtil;
 import org.openmrs.module.patientsummary.util.PrivilegeUtil;
+import org.openmrs.module.patientsummary.web.controller.PatientSummaryWebConfiguration;
 import org.openmrs.module.web.extension.PatientDashboardTabExt;
 
 /**
@@ -43,7 +43,7 @@ public class PatientSummaryTab extends PatientDashboardTabExt {
 	 */
 	@Override
 	public String getTabId() {
-		return ConfigurationUtil.MODULE_ID + "Id";
+		return "patientsummaryId";
 	}
 	
 	/**
@@ -51,6 +51,6 @@ public class PatientSummaryTab extends PatientDashboardTabExt {
 	 */
 	@Override
 	public String getTabName() {
-		return ConfigurationUtil.getPatientSummaryTabName();
+		return PatientSummaryWebConfiguration.getPatientSummaryTabName();
 	}
 }

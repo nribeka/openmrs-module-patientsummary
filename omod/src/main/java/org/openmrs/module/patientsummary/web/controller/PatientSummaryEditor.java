@@ -19,6 +19,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
+import org.openmrs.module.patientsummary.web.controller.util.DataSchemaUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,8 @@ public class PatientSummaryEditor {
 		
 		PatientSummaryReportDefinition report = getService().getPatientSummaryReportDefinitionByUuid(uuid);
 		model.addAttribute("report", report);
+		
+		model.addAttribute("dataSchema", DataSchemaUtil.getDataSchema(report));
 		
 		List<PatientSummaryTemplate> templates = getService().getPatientSummaryTemplates(report, false);
 		model.addAttribute("templates", templates);

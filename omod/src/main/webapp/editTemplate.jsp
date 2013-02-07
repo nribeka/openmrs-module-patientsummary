@@ -63,7 +63,7 @@
 	</div>
 	<div class="box">
 		<span class="metadataField">Name:</span>
-		<input name="name" value="${template.reportDesign.name}"/><br />
+		<input name="na	me" value="${template.reportDesign.name}"/><br />
 		<span class="metadataField">Type:</span>
 		<wgt:widget id="rendererType" name="rendererType" object="${template.reportDesign}" property="rendererType" attributes="type=org.openmrs.module.reporting.report.renderer.ReportRenderer|simple=true"/>
 		<br/><input type="checkbox" name="enableOnPatientDashboard" <c:if test="${enableOnPatientDashboard}">checked</c:if> ><spring:message code="patientsummary.enableOnPatientDashboard"/>
@@ -77,7 +77,7 @@
 	<div class="box">
 		<table style="width:100%" class="reporting-data-table display">
 			<tr><th>Name</th><th>Type</th></tr>
-			<c:forEach items="${template.reportDesign.reportDefinition.dataSchema}" var="item">
+			<c:forEach items="${dataSchema}" var="item">
 			<tr><td>${item.key}</td><td>${item.value}</td></tr>
 			</c:forEach>
 		</table>

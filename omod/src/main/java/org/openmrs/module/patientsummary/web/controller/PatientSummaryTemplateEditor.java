@@ -27,6 +27,7 @@ import org.openmrs.module.htmlwidgets.web.handler.WidgetHandler;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
+import org.openmrs.module.patientsummary.web.controller.util.DataSchemaUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;
 import org.openmrs.module.reporting.report.renderer.ReportRenderer;
@@ -75,6 +76,7 @@ public class PatientSummaryTemplateEditor {
 
 	private void populateModel(ModelMap model, PatientSummaryTemplate template) throws UnsupportedEncodingException {
 	    model.put("template", template);
+	    model.put("dataSchema", DataSchemaUtil.getDataSchema(template.getReportDefinition()));
 	    model.put("scriptType", template.getReportDesign().getPropertyValue(TextTemplateRenderer.TEMPLATE_TYPE, ""));
 		model.put("scriptTypes", TemplateEngineManager.getAvailableTemplateEngineNames());
 		

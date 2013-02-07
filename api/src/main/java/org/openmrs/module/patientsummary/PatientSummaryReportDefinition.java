@@ -13,12 +13,7 @@
  */
 package org.openmrs.module.patientsummary;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.openmrs.module.reporting.common.Localized;
-import org.openmrs.module.reporting.dataset.DataSetColumn;
-import org.openmrs.module.reporting.dataset.column.definition.ColumnDefinition;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.PatientDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -63,31 +58,5 @@ public class PatientSummaryReportDefinition extends ReportDefinition {
 	 */
 	public void setPatientDataSetDefinition(PatientDataSetDefinition pdsd) {
 		getDataSetDefinitions().put(DEFAULT_DATASET_KEY, new Mapped<DataSetDefinition>(pdsd, null));
-	}
-	
-	/**
-	 * @return the simplified data schema
-	 */
-	public Map<String, String> getDataSchema() {
-		Map<String, String> dataSchema = new LinkedHashMap<String, String>();
-		
-		for (ColumnDefinition column : getPatientDataSetDefinition().getColumnDefinitions()) {
-			for (DataSetColumn dataSetColumn : column.getDataSetColumns()) {
-				Class<?> dataType = dataSetColumn.getDataType();
-				dataSchema.put(dataSetColumn.getName(), splitCamelCase(dataType.getSimpleName()));
-			}
-		}
-		
-		return dataSchema;
-	}
-	
-	/**
-	 * Copied from http://stackoverflow.com/a/2560017
-	 * <p>
-	 * By http://stackoverflow.com/users/276101/polygenelubricants
-	 */
-	private String splitCamelCase(String s) {
-		return s.replaceAll(
-		    String.format("%s|%s|%s", "(?<=[A-Z])(?=[A-Z][a-z])", "(?<=[^A-Z])(?=[A-Z])", "(?<=[A-Za-z])(?=[^A-Za-z])"), " ");
 	}
 }

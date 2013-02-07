@@ -31,12 +31,12 @@
 
 <div id="page">
 	<div id="container">
-		<h1>Report Editor</h1>
+		<h1><spring:message code="patientsummary.summary.title"/></h1>
 		
 		<c:choose>
 			
 			<c:when test="${report.id == null}">
-				<b class="boxHeader">Create New Report</b>
+				<b class="boxHeader"><spring:message code="patientsummary.summary.new"/></b>
 				<div class="box">
 					<openmrs:portlet url="baseMetadata" id="baseMetadata" moduleId="reporting" parameters="type=org.openmrs.module.patientsummary.PatientSummaryReportDefinition|size=380|mode=edit|dialog=false|cancelUrl=manageSummaries.form|successUrl=/module/patientsummary/editSummary.form?uuid=uuid" />
 				</div>
@@ -51,15 +51,15 @@
 						<openmrs:portlet url="parameter" id="newParameter" moduleId="reporting" parameters="type=${report['class'].name}|uuid=${report.uuid}|label=Parameters|parentUrl=${pageUrl}" />
 						<br/>
 						<b class="boxHeader" style="text-align:right;">
-							<span style="float:left;">Templates</span>
-							<a style="color:lightyellow; font-weight:bold;" href="editTemplate/newTemplate.form?reportDefinitionUuid=${report.uuid}">[+] Add</a>
+							<span style="float:left;"><spring:message code="patientsummary.template.title"/></span>
+							<a style="color:lightyellow; font-weight:bold;" href="editTemplate/newTemplate.form?reportDefinitionUuid=${report.uuid}">[+] <spring:message code="patientsummary.add"/></a>
 						</b>
 						<div class="box">
 							<c:if test="${!empty templates}">
 								<table width="100%" style="margin-bottom:5px;">
 									<tr>
-										<th style="text-align:left; border-bottom:1px solid black;">Name</th>
-										<th style="text-align:left; border-bottom:1px solid black;">Type</th>
+										<th style="text-align:left; border-bottom:1px solid black;"><spring:message code="patientsummary.name"/></th>
+										<th style="text-align:left; border-bottom:1px solid black;"><spring:message code="patientsummary.type"/></th>
 										<th style="border-bottom:1px solid black;">[X]</th>
 									</tr>
 									<c:forEach items="${templates}" var="template" varStatus="designStatus">
@@ -75,13 +75,13 @@
 					</td>
 					<td valign="top" style="width:50%; padding-left:20px;">
 						<b class="boxHeader" style="text-align:right;">
-							<span style="float:left;">Data Schema</span>
-							<a style="color:lightyellow; font-weight:bold;" href="editSummary/editDataSchema.form?uuid=${report.uuid}">Edit</a>
+							<span style="float:left;"><spring:message code="patientsummary.dataSchema"/></span>
+							<a style="color:lightyellow; font-weight:bold;" href="editSummary/editDataSchema.form?uuid=${report.uuid}"><spring:message code="patientsummary.edit"/></a>
 						</b>
 						<div class="box">
 							<table id="dataSchema" style="width:100%" class="reporting-data-table display">
-								<tr><th>Name</th><th>Type</th></tr>
-								<c:forEach items="${report.dataSchema}" var="item">
+								<tr><th><spring:message code="patientsummary.name"/></th><th><spring:message code="patientsummary.type"/></th></tr>
+								<c:forEach items="${dataSchema}" var="item">
 								<tr><td>${item.key}</td><td>${item.value}</td></tr>
 								</c:forEach>
 							</table>

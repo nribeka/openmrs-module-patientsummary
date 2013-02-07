@@ -141,9 +141,9 @@ public class PatientSummaryTemplateEditor {
 		
 		getService().savePatientSummaryTemplate(template);
 		
-		model.put("uuid", template.getReportDefinition().getUuid());
+		model.put("templateUuid", template.getUuid());
 		
-		return "redirect:" + PatientSummaryWebConstants.MODULE_URL + "editSummary.form";
+		return "redirect:" + PatientSummaryWebConstants.MODULE_URL + "editTemplate.form";
 	}
 	
 	@RequestMapping(value = "/deleteResource", method = RequestMethod.GET)

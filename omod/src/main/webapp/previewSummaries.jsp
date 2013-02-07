@@ -17,7 +17,7 @@
 				<c:if test="${!empty iframe}">
 					<input type="hidden" name="iframe" value="${iframe}"/>
 				</c:if>
-				<c:if test="${!empty script}">
+				<c:if test="${!empty scriptType}">
 					<input type="hidden" name="script" value="${script}"/>
 					<input type="hidden" name="scriptType" value="${scriptType}"/>
 				</c:if>

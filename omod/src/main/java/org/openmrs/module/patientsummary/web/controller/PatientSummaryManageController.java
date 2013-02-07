@@ -120,7 +120,7 @@ public class PatientSummaryManageController {
 	                             @RequestParam(required = false) String script,
 	                             @RequestParam(required = false) String scriptType,
 	                             @RequestParam(required = false) String iframe, HttpSession session) throws Exception {
-		PatientSummaryService pss = Context.getService(PatientSummaryService.class);
+ 		PatientSummaryService pss = Context.getService(PatientSummaryService.class);
 
 		if (patientId == null) {
 			//Get patientId from session to avoid picking it all the time when returning to preview.
@@ -129,7 +129,7 @@ public class PatientSummaryManageController {
 			session.setAttribute("patientId", patientId);
 		}
 		
-		if (script == null) {
+		if (scriptType == null) {
 			//Don't display patient summary templates if previewing an unsaved script template.
 			List<PatientSummaryTemplate> patientSummaries = pss.getAllPatientSummaryTemplates(false);
 			model.addAttribute("patientSummaries", patientSummaries);

@@ -79,8 +79,8 @@
 							<a style="color:lightyellow; font-weight:bold;" href="editSummary/editDataSchema.form?uuid=${report.uuid}"><spring:message code="patientsummary.edit"/></a>
 						</b>
 						<div class="box">
-							<table id="dataSchema" style="width:100%" class="reporting-data-table display">
-								<tr><th><spring:message code="patientsummary.name"/></th><th><spring:message code="patientsummary.type"/></th></tr>
+							<table id="dataSchema" style="width:100%">
+								<tr style="text-align: left;"><th><spring:message code="patientsummary.name"/></th><th><spring:message code="patientsummary.type"/></th></tr>
 								<c:forEach items="${dataSchema}" var="item">
 								<tr><td>${item.key}</td><td>${item.value}</td></tr>
 								</c:forEach>

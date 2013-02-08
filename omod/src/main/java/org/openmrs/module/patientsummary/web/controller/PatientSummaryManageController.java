@@ -141,7 +141,7 @@ public class PatientSummaryManageController {
 		model.addAttribute("script", script);
 		model.addAttribute("scriptType", scriptType);
 		
-		String errorDetails = null;
+		Throwable errorDetails = null;
 		
 		if (summaryToPreview != null && patientId != null) {
 			PatientSummaryTemplate ps = pss.getPatientSummaryTemplate(summaryId);
@@ -165,7 +165,7 @@ public class PatientSummaryManageController {
 			PatientSummaryResult result = pss.evaluatePatientSummaryTemplate(ps, patientId, new HashMap<String, Object>());
 			String generatedSummary = (result.getRawContents() != null ? new String(result.getRawContents(), "UTF-8") : "");
 			model.addAttribute("generatedSummary", generatedSummary);
-			errorDetails = ObjectUtils.toString(result.getErrorDetails());
+			errorDetails = result.getErrorDetails();
 		}
 		
 		model.addAttribute("errorDetails", errorDetails);

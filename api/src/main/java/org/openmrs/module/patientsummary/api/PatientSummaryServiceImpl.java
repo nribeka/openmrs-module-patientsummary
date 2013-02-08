@@ -170,6 +170,7 @@ public class PatientSummaryServiceImpl extends BaseOpenmrsService implements Pat
 			result.setRawContents(baos.toByteArray());
 		}
 		catch (Throwable t) {
+			log.error("An error occurred trying to evaluate a patient summary template", t);
 			result.setErrorDetails(t);
 		}
 		finally {

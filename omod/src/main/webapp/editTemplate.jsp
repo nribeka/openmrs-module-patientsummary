@@ -1,6 +1,22 @@
-<%@ include file="template/reportingInclude.jsp"%>
+<%@ include file="/WEB-INF/template/include.jsp"%>
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="template/localHeader.jsp"%>
+
+<%@ taglib prefix="rpt" uri="/WEB-INF/view/module/reporting/resources/reporting.tld" %>
+
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/reporting/scripts/jquery/dataTables/css/page.css"/>
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/reporting/scripts/jquery/dataTables/css/table.css"/>
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/reporting/scripts/jquery/dataTables/css/custom.css"/>
+
+<openmrs:htmlInclude file="${pageContext.request.contextPath}/moduleResources/reporting/scripts/jquery/dataTables/jquery.dataTables.min.js"/>
+<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/moduleResources/patientsummary/js/codemirror.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/moduleResources/patientsummary/js/mirrorframe.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/moduleResources/patientsummary/css/main.css"/>
+<script type="text/javascript" src="${pageContext.request.contextPath}/moduleResources/patientsummary/js/main.js"></script>
 
 <style type="text/css">
 .tab {
@@ -9,33 +25,62 @@
 </style>
 
 <script type="text/javascript">
-	$(document).ready(function() {
-		$("#textTemplate").tabs();
-		
-		$("#rendererType").change(function() {
-			if ($(this).find("option:selected").attr("value") == "org.openmrs.module.reporting.report.renderer.TextTemplateRenderer") {
-				$("#templateConfiguration").hide();
-				$("#textTemplate").show();
+	$j(document).ready(function() {
+
+		$j("#data-schema-table").dataTable( {
+			"bPaginate": true,
+			"iDisplayLength": 10,
+			"bLengthChange": false,
+			"bFilter": false,
+			"bSort": true,
+			"bInfo": true,
+			"bAutoWidth": false
+		} );
+
+		$j("#rendererType").change(function() {
+			if ($j(this).find("option:selected").attr("value") == "org.openmrs.module.reporting.report.renderer.TextTemplateRenderer") {
+				$j("#templateConfiguration").hide();
+				$j("#textTemplate").show();
 			} else {
-				$("#templateConfiguration").show();
-				$("#textTemplate").hide();
+				$j("#templateConfiguration").show();
+				$j("#textTemplate").hide();
 			}
 		});
 		
-		$("#rendererType").trigger("change");
+		$j("#rendererType").trigger("change");
+
+		var editor = CodeMirror.fromTextArea('templateContents', {
+			height: "375px",
+			parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
+			stylesheet: "${pageContext.request.contextPath}/moduleResources/patientsummary/css/jscolors.css",
+			path: "${pageContext.request.contextPath}/moduleResources/patientsummary/js/",
+			continuousScanning: 500,
+			lineNumbers: true,
+			textWrapping: false,
+			autoMatchParens: true,
+			tabMode: "spaces",
+			submitFunction: function() {
+				$j("#previewLink").click();
+			},
+			saveFunction:function() {
+				document.forms["scriptForm"].submit();
+			}
+		});
 		
-		$("#previewLink").click(function() {
-			var form = $("#templateForm");
+		$j("#previewLink").click(function() {
+			$j("#templateContents").val(editor.getCode());
+			var form = $j("#templateForm");
 			form.attr("target", "previewFrame");
 			form.attr("action", '<c:url value="/module/patientsummary/previewSummaries.form" />')
-			
 			form.submit();
 			
 			form.attr("target", "");
 			form.attr("action", "");
 		});
 		
-		$("#editLink").trigger("click");
+		$j("#editLink").trigger("click");
+
+		$j("#textTemplate").tabs();
 	});
 </script>
 
@@ -55,18 +100,12 @@
 			<tr>
 				<td><spring:message code="patientsummary.type" />:</td>
 				<td>
-				<select id="rendererType" name="rendererType">
-				<c:forEach items="${rendererTypes}" var="rendererType">
-					<c:choose>
-					<c:when test="${rendererType eq template.reportDesign.rendererType}">
-						<option selected="selected" value="${rendererType.name}"><rpt:displayLabel type="${rendererType.name}"/></option>
-					</c:when>
-					<c:otherwise>
-						<option value="${rendererType.name}"><rpt:displayLabel type="${rendererType.name}"/></option>
-					</c:otherwise>
-					</c:choose>
-				</c:forEach>
-				</select>
+					<select id="rendererType" name="rendererType">
+						<c:forEach var="type" items="${rendererTypes}">
+							<c:set var="isSelected" value="${type eq template.reportDesign.rendererType ? ' selected' : ''}"/>
+							<option value="${type.name}"${isSelected}><rpt:displayLabel type="${type.name}"/></option>
+						</c:forEach>
+					</select>
 				</td>
 			</tr>
 		</table>
@@ -79,11 +118,15 @@
 		<spring:message code="patientsummary.dataSchema" />
 	</div>
 	<div class="box">
-		<table style="width:100%">
-			<tr style="text-align: left;"><th><spring:message code="patientsummary.name" /></th><th><spring:message code="patientsummary.type" /></th></tr>
-			<c:forEach items="${dataSchema}" var="item">
-			<tr><td>${item.key}</td><td>${item.value}</td></tr>
-			</c:forEach>
+		<table id="data-schema-table" class="display">
+			<thead>
+				<tr style="text-align: left;"><th><spring:message code="patientsummary.name" /></th><th><spring:message code="patientsummary.type" /></th></tr>
+			</thead>
+			<tbody>
+				<c:forEach items="${dataSchema}" var="item">
+					<tr><td>${item.key}</td><td>${item.value}</td></tr>
+				</c:forEach>
+			</tbody>
 		</table>
 	</div>
 </div>
@@ -108,32 +151,28 @@
 			<wgt:widget id="properties" name="properties" object="${template.reportDesign}" property="properties" attributes="rows=20|cols=50"/>
 		</div>
 	</div>
-	
+
 	<div id="textTemplate">
 		<ul>
 			<li><a id="editLink" href="#edit"><spring:message code="patientsummary.template.edit" /></a></li>
 			<li><a id="previewLink" href="#preview"><spring:message code="patientsummary.template.preview" /></a></li>
 		</ul>
 			
-		<div id="edit">
+		<div id="edit" style="font-size:small;">
 			<spring:message code="patientsummary.template.scriptType" />:
 			<select name="scriptType">
-			<c:forEach var="type" items="${scriptTypes}">
-				<c:choose>
-				<c:when test="${scriptType eq type}">
-					<option selected="selected">${type}</option>
-				</c:when>
-				<c:otherwise>
-					<option>${type}</option>
-				</c:otherwise>
-				</c:choose>
-			</c:forEach>
-			
+				<c:forEach var="type" items="${scriptTypes}">
+					<c:set var="isSelected" value="${scriptType eq type ? ' selected' : ''}"/>
+					<option value="${type}"${isSelected}>${type}</option>
+				</c:forEach>
+			</select>
 			<br/><br/>
-			<textarea name="script" rows="20" cols="2" style="width:99%">${script}</textarea>
+			<div id="textarea-container" class="border">
+				<textarea id="templateContents" name="script" cols="140" rows="80">${script}</textarea>
+			</div>
 		</div>
 		<div id="preview">
-			<iframe id="previewFrame" style="width: 99%; height: 300px"></iframe>
+			<iframe id="previewFrame" style="width: 99%; height: 400px"></iframe>
 		</div>
 	</div>
 	

@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
+<%@ taglib prefix="ps" uri="/WEB-INF/view/module/patientsummary/resources/patientsummary.tld" %>
 
 <c:choose>
 	<c:when test="${not iframe}">
@@ -21,47 +22,42 @@
 					<input type="hidden" name="script" value="${script}"/>
 					<input type="hidden" name="scriptType" value="${scriptType}"/>
 				</c:if>
-				
-				<b>Choose Patient:</b><br/>
-				<openmrs_tag:patientField formFieldName="patientId" initialValue="${patientId}" /><br/>
+				<b>Choose Patient:</b>
+				<openmrs_tag:patientField formFieldName="patientId" initialValue="${patientId}" />
 				<c:choose>
 					<c:when test="${!empty patientSummaries}">
-						<br/>
-						<b>Choose Summary:</b><br/>
-						<c:forEach items="${patientSummaries}" var="ps">
-							<input type="radio" name="summaryId" value="${ps.id}" <c:if test="${summaryToPreview != null && summaryToPreview.id == ps.id}">checked</c:if>/> ${ps.name}<br/>
-						</c:forEach>
-						<br/>
+						<select name="summaryId">
+							<option value="">Choose Summary:</option>
+							<c:forEach items="${patientSummaries}" var="ps">
+								<c:set var="isSelected" value="${summaryToPreview != null && summaryToPreview.id == ps.id ? ' selected' : ''}"/>
+								<option value="${ps.id}"${isSelected}>${ps.name}</option>
+							</c:forEach>
+						</select>
 					</c:when>
 					<c:otherwise>
 						<input type="hidden" name="summaryId" value="${summaryToPreview.id}"/>
 					</c:otherwise>
 				</c:choose>
 				<input type="submit" value="Preview"/>
+				<hr/>
+				<c:choose>
+					<c:when test="${!empty errorDetails}">
+						<b style="font-size:smaller;"><ps:exception exception="${errorDetails}"/></b><br/>
+					</c:when>
+					<c:when test="${empty summaryToPreview and empty patientId}">
+						Select a Patient and a Patient Summary from the left and click Preview to view
+					</c:when>
+					<c:when test="${empty summaryToPreview}">
+						Select a Patient Summary from the left and click Preview to view
+					</c:when>
+					<c:when test="${empty patientId}">
+						Select a Patient on the left and click Preview to view
+					</c:when>
+					<c:otherwise>
+						${generatedSummary}
+					</c:otherwise>
+				</c:choose>
 			</form>
-		</td>
-		<td style="width:95%; vertical-align:top;">
-			<c:choose>
-				<c:when test="${!empty errorDetails}">
-					An error occurred generating the patient summary named ${summaryToPreview.name}:<br/>
-					<pre>
-						${errorDetails}
-					</pre>
-				</c:when>
-				<c:when test="${empty summaryToPreview and empty patientId}">
-					Select a Patient and a Patient Summary from the left and click Preview to view
-				</c:when>
-				<c:when test="${empty summaryToPreview}">
-					Select a Patient Summary from the left and click Preview to view
-				</c:when>
-				<c:when test="${empty patientId}">
-					Select a Patient on the left and click Preview to view
-				</c:when>
-				<c:otherwise>
-					Preview of ${summaryToPreview.name}:<hr />
-					${generatedSummary}
-				</c:otherwise>
-			</c:choose>
 		</td>
 	</tr>
 </table>

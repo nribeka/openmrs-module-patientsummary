@@ -59,12 +59,14 @@
 			</tbody>
 			<tfoot></tfoot>
 		</table>
+
+		<br/><br/>
+		<div>
+			<input type="button" value="Define a new Patient Summary" onclick="window.location='editSummary.form'"/>
+		</div>
 	
 	</div>
-	
-	<div>
-		<input type="button" value="Define a new Patient Summary" onclick="window.location='editSummary.form'"/>
-	</div>
+
 </div>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

@@ -3,6 +3,7 @@
 <%@ include file="template/localHeader.jsp"%>
 
 <%@ taglib prefix="rpt" uri="/WEB-INF/view/module/reporting/resources/reporting.tld" %>
+<%@ taglib prefix="wgt" uri="/WEB-INF/view/module/htmlwidgets/resources/htmlwidgets.tld" %>
 
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
@@ -127,7 +128,9 @@
 					<tr><td>${item.key}</td><td>${item.value}</td></tr>
 				</c:forEach>
 			</tbody>
+			<tfoot></tfoot>
 		</table>
+		<br/><br/>
 	</div>
 </div>
 
@@ -148,7 +151,7 @@
 			</c:if>
 			<br/>
 			<spring:message code="patientsummary.template.configuration" />: <br/>
-			<wgt:widget id="properties" name="properties" object="${template.reportDesign}" property="properties" attributes="rows=20|cols=50"/>
+			<wgt:widget id="properties" name="properties" object="${template.reportDesign}" property="properties" attributes="rows=10|cols=100"/>
 		</div>
 	</div>
 
@@ -175,7 +178,7 @@
 			<iframe id="previewFrame" style="width: 99%; height: 400px"></iframe>
 		</div>
 	</div>
-	
+	<br/><br/>
 	<div style="text-align: right;">
 		<input type="button" value="<spring:message code="patientsummary.template.backToSummary" />" onclick="window.location='editSummary.form?uuid=${template.reportDesign.reportDefinition.uuid}'"/> <input type="button" value="<spring:message code="patientsummary.cancel" />" onclick="window.location='editTemplate.form?templateUuid=${template.uuid}'"/> <input type="submit" value="<spring:message code="patientsummary.save" />"/>
 	</div>

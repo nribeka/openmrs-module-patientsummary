@@ -19,7 +19,7 @@
 					<input type="hidden" name="iframe" value="${iframe}"/>
 				</c:if>
 				<c:if test="${!empty scriptType}">
-					<input type="hidden" name="script" value="${script}"/>
+					<textarea style="display:none;" name="script">${script}</textarea>
 					<input type="hidden" name="scriptType" value="${scriptType}"/>
 				</c:if>
 				<b>Choose Patient:</b>

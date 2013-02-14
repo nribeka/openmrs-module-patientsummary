@@ -65,7 +65,7 @@
 		</span>
 	</c:forEach>
 </div>
-
+<hr/>
 <div id="${model.portletUUID}LoadingDiv" style="width:100%; text-align:center; padding-top:50px; display:none;">
 	<b><spring:message code="patientsummary.loadingMessage"/></b>
 	<br/>

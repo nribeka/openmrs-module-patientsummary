@@ -125,7 +125,7 @@
 			</thead>
 			<tbody>
 				<c:forEach items="${dataSchema}" var="item">
-					<tr><td>${item.key}</td><td>${item.value}</td></tr>
+					<tr><td>$data.${item.key}</td><td>${item.value}</td></tr>
 				</c:forEach>
 			</tbody>
 			<tfoot></tfoot>

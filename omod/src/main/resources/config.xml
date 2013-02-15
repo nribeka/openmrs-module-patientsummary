@@ -14,7 +14,7 @@
 	<require_version>${openMRSVersion}</require_version>
 
 	<require_modules>																										
-		<require_module version="0.7.2">org.openmrs.module.reporting</require_module>
+		<require_module version="0.7.5">org.openmrs.module.reporting</require_module>
 		<require_module version="1.6.1">org.openmrs.module.htmlwidgets</require_module>		
 	</require_modules>
 
@@ -22,13 +22,20 @@
 
 	<extension>
 		<point>org.openmrs.admin.list</point>
-		<class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.AdminList</class>
+		<class>${project.parent.groupId}.${project.parent.artifactId}.web.extension.AdminList</class>
 	</extension>
 	
 	<extension>
         <point>org.openmrs.patientDashboardTab</point>
-        <class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.PatientSummaryTab</class>
+        <class>${project.parent.groupId}.${project.parent.artifactId}.web.extension.PatientSummaryTab</class>
     </extension>
+
+	<!-- This extension point is for the patient dashboard header extension for patient summaries -->
+
+	<extension>
+		<point>org.openmrs.patientDashboard.patientActionsContent</point>
+		<class>${project.parent.groupId}.${project.parent.artifactId}.web.extension.PatientDashboardActions</class>
+	</extension>
     
     <!-- Global properties -->
 	<globalProperty>
@@ -43,7 +50,151 @@
 		<property>${project.parent.artifactId}.patientDashboardSummaries</property>
 		<defaultValue></defaultValue>
 		<description>
-			A comma separated list of uuids for report designs that can be run from the patient summary tab on the patient dashboard
+			A comma separated list of uuids for patient summary templates that can be run from the patient summary tab on the patient dashboard
+		</description>
+	</globalProperty>
+
+	<!-- The following global properties are here in order to support the legacy hard-coded
+		 patient summary provided by this module -->
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.enableDefaultSummary</property>
+		<defaultValue>false</defaultValue>
+		<description>
+			Set this to true if you wish to enable the default, legacy patient summary contained within this module.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.vitalSigns</property>
+		<defaultValue>5089,5090</defaultValue>
+		<description>
+			Comma delimited list of concept ids for vital signs
+			Defaults: weight (5089), height (5090)
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.maxChildAge</property>
+		<defaultValue>6</defaultValue>
+		<description>
+			Maximum age of a child (exclusive).
+			Default: 6
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>${project.parent.artifactId}.adultconceptIdsToWatch</property>
+		<defaultValue>12,5497</defaultValue>
+		<description>
+			Comma delimited list of concept ids to trigger alerts for adults.
+			Alerts trigger when concepts are empty or have not been updated in six months.
+			Defaults: x-ray chest (12), cd4 (5497).
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>${project.parent.artifactId}.childconceptIdsToWatch</property>
+		<defaultValue>12,730,5497,5089,5090</defaultValue>
+		<description>
+			Comma delimited list of concept ids to trigger alerts for children.
+			Alerts trigger when concepts are empty or have not been updated in one month.
+			Defaults: x-ray chest (12), cd4 (5497), cd4% (730), weight (5089), height (5090)
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.adultconceptIdsToGraph</property>
+		<defaultValue>5090,5089,5497</defaultValue>
+		<description>
+			Ordered, comma separated list of adult concept ids to graph in patient summary.
+			Defaults: height (5090), weight (5089), cd4 (5497).
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>${project.parent.artifactId}.childconceptIdsToGraph</property>
+		<defaultValue>5090,5089,5497</defaultValue>
+		<description>
+			Ordered, comma separated list of child concept ids to graph in patient summary.
+			Defaults: height (5090), weight (5089), cd4 (5497).
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.labTestsConceptId</property>
+		<defaultValue>1337</defaultValue>
+		<description>
+			Laboratory examinations construct concept id.
+			Default: 1337.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.symptomPresentConceptId</property>
+		<defaultValue>1293</defaultValue>
+		<description>
+			Review of symptoms on presentation concept id.
+			Default: 1293.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.previousDiagnosisConceptId</property>
+		<defaultValue>992</defaultValue>
+		<description>
+			Problem list construct concept id.
+			Default: 992.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.adverseEffectConceptId</property>
+		<defaultValue>1297</defaultValue>
+		<description>
+			Adverse effect concept id.
+			Default: 1297.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.arvDrugsConceptId</property>
+		<defaultValue>1085</defaultValue>
+		<description>
+			ARV Drugs concept id.
+			Default: 1085.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.opportunisticInfectionConceptId</property>
+		<defaultValue>1607</defaultValue>
+		<description>
+			Presumed or confirmed opportunistic infections
+			Default: 1607.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.conceptsToIgnore</property>
+		<defaultValue>1107</defaultValue>
+		<description>
+			Comma delimited list of concepts to ignore.
+			Default: 1107.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>${project.parent.artifactId}.hivTestResultConceptId</property>
+		<defaultValue>2169</defaultValue>
+		<description>
+			HIV Test concept id.
+			Default: 2169.
+		</description>
+	</globalProperty>
+	<globalProperty>
+		<property>${project.parent.artifactId}.notesConceptIds</property>
+		<defaultValue>974,1336,1364</defaultValue>
+		<description>
+			Comma delimited list of concept ids for notes
+			Defaults: presenting history (974), physical examination (1336), clinical impression comments (1364)
 		</description>
 	</globalProperty>
 

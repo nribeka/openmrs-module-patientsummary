@@ -20,7 +20,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
-import org.openmrs.module.patientsummary.web.controller.PatientSummaryWebConfiguration;
+import org.openmrs.module.patientsummary.web.PatientSummaryWebConfiguration;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.controller.PortletController;
 import org.springframework.stereotype.Controller;

@@ -19,6 +19,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
+import org.openmrs.module.patientsummary.web.PatientSummaryWebConstants;
 import org.openmrs.module.patientsummary.web.controller.util.DataSchemaUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;

@@ -30,6 +30,8 @@ import org.openmrs.module.htmlwidgets.web.handler.WidgetHandler;
 import org.openmrs.module.patientsummary.PatientSummaryReportDefinition;
 import org.openmrs.module.patientsummary.PatientSummaryTemplate;
 import org.openmrs.module.patientsummary.api.PatientSummaryService;
+import org.openmrs.module.patientsummary.web.PatientSummaryWebConfiguration;
+import org.openmrs.module.patientsummary.web.PatientSummaryWebConstants;
 import org.openmrs.module.patientsummary.web.controller.util.DataSchemaUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportDesignResource;

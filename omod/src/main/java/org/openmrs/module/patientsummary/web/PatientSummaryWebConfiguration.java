@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.patientsummary.web.controller;
+package org.openmrs.module.patientsummary.web;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.patientsummary.extension.html;
+package org.openmrs.module.patientsummary.web.extension;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

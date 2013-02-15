@@ -11,10 +11,10 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.patientsummary.extension.html;
+package org.openmrs.module.patientsummary.web.extension;
 
 import org.openmrs.module.patientsummary.util.PrivilegeUtil;
-import org.openmrs.module.patientsummary.web.controller.PatientSummaryWebConfiguration;
+import org.openmrs.module.patientsummary.web.PatientSummaryWebConfiguration;
 import org.openmrs.module.web.extension.PatientDashboardTabExt;
 
 /**

@@ -11,9 +11,9 @@
 	<url>https://wiki.openmrs.org/display/docs/Patient+Summary+Module</url>
 	
 	<scm>
-		<connection>scm:git:https://github.com/mseaton/openmrs-module-patientsummary/</connection>
-		<developerConnection>scm:git:https://github.com/mseaton/openmrs-module-patientsummary/</developerConnection>
-		<url>https://github.com/mseaton/openmrs-module-patientsummary/</url>
+		<connection>scm:git:https://github.com/openmrs/openmrs-module-patientsummary/</connection>
+		<developerConnection>scm:git:https://github.com/openmrs/openmrs-module-patientsummary/</developerConnection>
+		<url>https://github.com/openmrs/openmrs-module-patientsummary/</url>
 	</scm>
 	
 	<distributionManagement>
